@@ -12,12 +12,17 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.NamedQuery;
+
 @SuppressWarnings("unused")
 
 /**
  * Role class used for (JSR-375) Jakarta EE Security authorization/authentication
  */
 //TODO SR01 - Make this into JPA entity and add all necessary annotations inside the class.
+@Entity
+@NamedQuery(name = "SecurityRole.findRoleByName", query = "SELECT r FROM SecurityRole r WHERE r.roleName = :param1")
 public class SecurityRole implements Serializable {
     /** Explicit set serialVersionUID */
     private static final long serialVersionUID = 1L;
