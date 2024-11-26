@@ -97,7 +97,7 @@ public class PatientResource {
     @Path(RESOURCE_PATH_ID_PATH)
     public Response deletePatientById(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id) {
         Response response = null;
-        service.deletePatient(id); 
+        service.deletePatientById(id); 
         response = Response.status(Status.NO_CONTENT).build();        
         return response;
     }
