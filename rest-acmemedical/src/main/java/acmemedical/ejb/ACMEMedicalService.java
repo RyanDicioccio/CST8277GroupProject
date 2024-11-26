@@ -91,6 +91,12 @@ public class ACMEMedicalService implements Serializable {
         em.persist(newPhysician);
         return newPhysician;
     }
+    
+    @Transactional
+    public Patient persistPhysician(Patient newPatient) {
+        em.persist(newPatient);
+        return newPatient;
+    }
 
     @Transactional
     public void buildUserForNewPhysician(Physician newPhysician) {
@@ -156,6 +162,24 @@ public class ACMEMedicalService implements Serializable {
         }
         return physicianToBeUpdated;
     }
+    
+    /**
+     * To update a patient
+     * 
+     * @param id - id of entity to update
+     * @param patientWithUpdates - entity with updated information
+     * @return Entity with updated information
+     */
+    @Transactional
+    public Patient updatePatientById(int id, Patient patientWithUpdates) {
+    	Patient patientToBeUpdated = getById(Patient.class, "Patient.findById", id);
+        if (patientToBeUpdated != null) {
+            em.refresh(patientToBeUpdated);
+            em.merge(patientWithUpdates);
+            em.flush();
+        }
+        return patientToBeUpdated;
+    }
 
     /**
      * To delete a physician by id
@@ -173,6 +197,19 @@ public class ACMEMedicalService implements Serializable {
             em.remove(sUser);
             em.remove(physician);
         }
+    }
+    
+    /**
+     * To delete a patient by id
+     * 
+     * @param id - patient id to delete
+     */
+    @Transactional
+    public void deletePatientById(int id) {
+        Patient patient = getById(Patient.class, "Patient.findById", id);
+        if (patient != null) {
+            em.remove(patient);
+        } 
     }
     
     public List<MedicalSchool> getAllMedicalSchools() {
