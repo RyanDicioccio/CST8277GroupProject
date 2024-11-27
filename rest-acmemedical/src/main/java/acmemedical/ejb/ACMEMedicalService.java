@@ -93,7 +93,7 @@ public class ACMEMedicalService implements Serializable {
     }
     
     @Transactional
-    public Patient persistPhysician(Patient newPatient) {
+    public Patient persistPatient(Patient newPatient) {
         em.persist(newPatient);
         return newPatient;
     }

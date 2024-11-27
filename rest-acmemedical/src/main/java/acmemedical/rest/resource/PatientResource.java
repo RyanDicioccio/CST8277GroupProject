@@ -77,7 +77,7 @@ public class PatientResource {
     @RolesAllowed({ADMIN_ROLE})
     public Response addPatient(Patient newPatient) {
         Response response = null;
-        Patient newPatientWithIdTimestamps = service.persistPhysician(newPatient);
+        Patient newPatientWithIdTimestamps = service.persistPatient(newPatient);
         response = Response.ok(newPatientWithIdTimestamps).build();
         return response;
     }
