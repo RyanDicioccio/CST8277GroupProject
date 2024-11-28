@@ -10,6 +10,9 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.NamedQuery;
+
 @SuppressWarnings("unused")
 
 /**
@@ -17,6 +20,9 @@ import java.util.Set;
  */
 //TODO PA01 - Add the missing annotations.
 //TODO PA02 - Do we need a mapped super class?  If so, which one?
+@Entity
+@NamedQuery(name = "Patient.findAll", query = "SELECT p FROM Patient p")
+@NamedQuery(name = "Patient.findById", query = "SELECT p FROM Patient p WHERE p.id = :param1")
 public class Patient extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 	

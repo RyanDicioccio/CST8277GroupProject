@@ -81,7 +81,7 @@ public class ACMEMedicalService implements Serializable {
         cq.select(cq.from(Physician.class));
         return em.createQuery(cq).getResultList();
     }
-
+    
     public Physician getPhysicianById(int id) {
         return em.find(Physician.class, id);
     }
@@ -90,6 +90,12 @@ public class ACMEMedicalService implements Serializable {
     public Physician persistPhysician(Physician newPhysician) {
         em.persist(newPhysician);
         return newPhysician;
+    }
+    
+    @Transactional
+    public Patient persistPatient(Patient newPatient) {
+        em.persist(newPatient);
+        return newPatient;
     }
 
     @Transactional
@@ -106,7 +112,9 @@ public class ACMEMedicalService implements Serializable {
         String pwHash = pbAndjPasswordHash.generate(DEFAULT_USER_PASSWORD.toCharArray());
         userForNewPhysician.setPwHash(pwHash);
         userForNewPhysician.setPhysician(newPhysician);
-        SecurityRole userRole = /* TODO ACMECS01 - Use NamedQuery on SecurityRole to find USER_ROLE */ null;
+        TypedQuery<SecurityRole> query = em.createNamedQuery("SecurityRole.findRoleByName", SecurityRole.class);
+        query.setParameter(PARAM1, "USER_ROLE");
+        SecurityRole userRole = query.getSingleResult();
         userForNewPhysician.getRoles().add(userRole);
         userRole.getUsers().add(userForNewPhysician);
         em.persist(userForNewPhysician);
@@ -154,6 +162,24 @@ public class ACMEMedicalService implements Serializable {
         }
         return physicianToBeUpdated;
     }
+    
+    /**
+     * To update a patient
+     * 
+     * @param id - id of entity to update
+     * @param patientWithUpdates - entity with updated information
+     * @return Entity with updated information
+     */
+    @Transactional
+    public Patient updatePatientById(int id, Patient patientWithUpdates) {
+    	Patient patientToBeUpdated = getById(Patient.class, "Patient.findById", id);
+        if (patientToBeUpdated != null) {
+            em.refresh(patientToBeUpdated);
+            em.merge(patientWithUpdates);
+            em.flush();
+        }
+        return patientToBeUpdated;
+    }
 
     /**
      * To delete a physician by id
@@ -165,15 +191,25 @@ public class ACMEMedicalService implements Serializable {
         Physician physician = getPhysicianById(id);
         if (physician != null) {
             em.refresh(physician);
-            TypedQuery<SecurityUser> findUser = 
-            /* TODO ACMECS02 - Use NamedQuery on SecurityRole to find this related Student
-               so that when we remove it, the relationship from SECURITY_USER table
-               is not dangling
-            */ null;
+            TypedQuery<SecurityUser> findUser = em.createNamedQuery("SecurityUser.findByPhysicianId", SecurityUser.class);
+            findUser.setParameter(PARAM1, id);
             SecurityUser sUser = findUser.getSingleResult();
             em.remove(sUser);
             em.remove(physician);
         }
+    }
+    
+    /**
+     * To delete a patient by id
+     * 
+     * @param id - patient id to delete
+     */
+    @Transactional
+    public void deletePatientById(int id) {
+        Patient patient = getById(Patient.class, "Patient.findById", id);
+        if (patient != null) {
+            em.remove(patient);
+        } 
     }
     
     public List<MedicalSchool> getAllMedicalSchools() {

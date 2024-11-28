@@ -13,6 +13,9 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.NamedQuery;
+
 @SuppressWarnings("unused")
 
 /**
@@ -20,6 +23,8 @@ import java.util.Set;
  */
 
 //TODO SU01 - Make this into JPA entity and add all the necessary annotations inside the class.
+@Entity
+@NamedQuery(name = "SecurityUser.findByPhysicianId", query = "SELECT u FROM SecurityUser u WHERE u.physician.id = :param1")
 public class SecurityUser implements Serializable, Principal {
     /** Explicit set serialVersionUID */
     private static final long serialVersionUID = 1L;
