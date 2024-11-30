@@ -13,6 +13,9 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import acmemedical.rest.serializer.SecurityRoleSerializer;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -93,7 +96,8 @@ public class SecurityUser implements Serializable, Principal {
         this.pwHash = pwHash;
     }
 
-    // TODO SU07 - Setup custom JSON serializer
+    // TODONE SU07 - Setup custom JSON serializer
+    @JsonSerialize(using = SecurityRoleSerializer.class)
     public Set<SecurityRole> getRoles() {
         return roles;
     }
