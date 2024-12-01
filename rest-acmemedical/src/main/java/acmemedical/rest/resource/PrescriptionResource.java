@@ -1,16 +1,17 @@
 package acmemedical.rest.resource;
 
 import static acmemedical.utility.MyConstants.ADMIN_ROLE;
-import static acmemedical.utility.MyConstants.MEDICAL_TRAINING_RESOURCE_NAME;
+import static acmemedical.utility.MyConstants.PRESCRIPTION_RESOURCE_NAME;
 import static acmemedical.utility.MyConstants.RESOURCE_PATH_ID_ELEMENT;
 import static acmemedical.utility.MyConstants.RESOURCE_PATH_ID_PATH;
 
 import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import acmemedical.ejb.ACMEMedicalService;
-import acmemedical.entity.MedicalTraining;
+import acmemedical.entity.Prescription;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ejb.EJB;
 import jakarta.inject.Inject;
@@ -28,15 +29,15 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
 /**
- * This is a resource class for the MedicalTraining Entity of the application.
+ * This is a resource class for the Prescription Entity of the application.
  * 
  * @author Ryan Di Cioccio
  */
 
-@Path(MEDICAL_TRAINING_RESOURCE_NAME)
+@Path(PRESCRIPTION_RESOURCE_NAME)
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class MedicalTrainingResource {
+public class PrescriptionResource {
     private static final Logger LOG = LogManager.getLogger();
 
     @EJB
@@ -47,24 +48,24 @@ public class MedicalTrainingResource {
 
     @GET
     @RolesAllowed({ADMIN_ROLE})
-    public Response getMedicalTrainings() {
-        LOG.debug("Retrieving all medical trainings...");
-        List<MedicalTraining> trainings = service.getAll(MedicalTraining.class, "MedicalTraining.findAll");
-        Response response = Response.ok(trainings).build();
+    public Response getPrescriptions() {
+        LOG.debug("Retrieving all prescriptions...");
+        List<Prescription> prescriptions = service.getAll(Prescription.class, "Prescription.findAll");
+        Response response = Response.ok(prescriptions).build();
         return response;
     }
 
     @GET
     @RolesAllowed({ADMIN_ROLE})
     @Path(RESOURCE_PATH_ID_PATH)
-    public Response getMedicalTrainingById(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id) {
-        LOG.debug("Trying to retrieve specific medical training with ID " + id);
+    public Response getPrescriptionById(@PathParam(RESOURCE_PATH_ID_ELEMENT) String id) {
+        LOG.debug("Trying to retrieve specific prescription with ID " + id);
         Response response = null;
-        MedicalTraining training = null;
+        Prescription prescription = null;
 
         if (sc.isCallerInRole(ADMIN_ROLE)) {
-            training = service.getById(MedicalTraining.class, "MedicalTraining.findById", id);
-            response = Response.status(training == null ? Status.NOT_FOUND : Status.OK).entity(training).build();
+            prescription = service.getById(Prescription.class, "Prescription.findById", id);
+            response = Response.status(prescription == null ? Status.NOT_FOUND : Status.OK).entity(prescription).build();
         } else {
             response = Response.status(Status.BAD_REQUEST).build();
         }
@@ -73,32 +74,32 @@ public class MedicalTrainingResource {
 
     @POST
     @RolesAllowed({ADMIN_ROLE})
-    public Response addMedicalTraining(MedicalTraining newTraining) {
-        LOG.debug("Adding new medical training...");
+    public Response addPrescription(Prescription newPrescription) {
+        LOG.debug("Adding new prescription...");
         Response response = null;
-        MedicalTraining newTrainingWithId = service.persistMedicalTraining(newTraining);
-        response = Response.ok(newTrainingWithId).build();
+        Prescription newPrescriptionWithId = service.persistPrescription(newPrescription);
+        response = Response.ok(newPrescriptionWithId).build();
         return response;
     }
 
     @PUT
     @RolesAllowed({ADMIN_ROLE})
     @Path(RESOURCE_PATH_ID_PATH)
-    public Response updateMedicalTraining(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id, MedicalTraining updatedTraining) {
-        LOG.debug("Updating medical training with ID " + id);
+    public Response updatePrescription(@PathParam(RESOURCE_PATH_ID_ELEMENT) String id, Prescription updatedPrescription) {
+        LOG.debug("Updating prescription with ID " + id);
         Response response = null;
-        MedicalTraining training = service.updateMedicalTrainingById(id, updatedTraining);
-        response = Response.ok(training).build();
+        Prescription prescription = service.updatePrescriptionById(id, updatedPrescription);
+        response = Response.ok(prescription).build();
         return response;
     }
 
     @DELETE
     @RolesAllowed({ADMIN_ROLE})
     @Path(RESOURCE_PATH_ID_PATH)
-    public Response deleteMedicalTrainingById(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id) {
-        LOG.debug("Deleting medical training with ID " + id);
+    public Response deletePrescriptionById(@PathParam(RESOURCE_PATH_ID_ELEMENT) String id) {
+        LOG.debug("Deleting prescription with ID " + id);
         Response response = null;
-        service.deleteMedicalTrainingById(id);
+        service.deletePrescriptionById(id);
         response = Response.status(Status.NO_CONTENT).build();
         return response;
     }

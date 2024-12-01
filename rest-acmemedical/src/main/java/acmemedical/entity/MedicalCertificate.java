@@ -8,6 +8,8 @@ package acmemedical.entity;
 
 import java.io.Serializable;
 
+import jakarta.persistence.NamedQuery;
+
 @SuppressWarnings("unused")
 
 /**
@@ -15,6 +17,7 @@ import java.io.Serializable;
  */
 //TODO MC01 - Add the missing annotations.
 //TODO MC02 - Do we need a mapped super class?  If so, which one?
+@NamedQuery(name = "MedicalTraining.findById", query = "SELECT mt FROM MedicalTraining mt WHERE mt.id = :id")
 public class MedicalCertificate extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
