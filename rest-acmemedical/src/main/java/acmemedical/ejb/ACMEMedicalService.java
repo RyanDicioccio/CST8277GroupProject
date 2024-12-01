@@ -311,4 +311,175 @@ public class ACMEMedicalService implements Serializable {
         return medicalTrainingToBeUpdated;
     }
     
+    /**
+     * To update a medical training
+     * 
+     * @param id - ID of the entity to update
+     * @param trainingWithUpdates - Entity with updated information
+     * @return Entity with updated information
+     */
+    @Transactional
+    public MedicalTraining updateMedicalTrainingById(int id, MedicalTraining trainingWithUpdates) {
+        MedicalTraining trainingToBeUpdated = getById(MedicalTraining.class, "MedicalTraining.findById", id);
+        if (trainingToBeUpdated != null) {
+            em.refresh(trainingToBeUpdated);
+            em.merge(trainingWithUpdates);
+            em.flush();
+        }
+        return trainingToBeUpdated;
+    }
+    
+    /**
+     * To delete a medical training by ID
+     * 
+     * @param id - ID of the medical training to delete
+     */
+    @Transactional
+    public void deleteMedicalTrainingById(int id) {
+        MedicalTraining training = getById(MedicalTraining.class, "MedicalTraining.findById", id);
+        if (training != null) {
+            em.refresh(training);
+            em.remove(training);
+        }
+    }
+    
+    /**
+     * To persist a new medical certificate
+     * 
+     * @param newCertificate - The new MedicalCertificate entity to persist
+     * @return The persisted MedicalCertificate entity with generated ID and timestamps
+     */
+    @Transactional
+    public MedicalCertificate persistMedicalCertificate(MedicalCertificate newCertificate) {
+        em.persist(newCertificate);
+        em.flush(); // Ensure the persistence is immediately reflected in the database
+        return newCertificate;
+    }
+    
+    /**
+     * To update a medical certificate
+     * 
+     * @param id - ID of the entity to update
+     * @param certificateWithUpdates - Entity with updated information
+     * @return Entity with updated information
+     */
+    @Transactional
+    public MedicalCertificate updateMedicalCertificateById(int id, MedicalCertificate certificateWithUpdates) {
+        MedicalCertificate certificateToBeUpdated = getById(MedicalCertificate.class, "MedicalCertificate.findById", id);
+        if (certificateToBeUpdated != null) {
+            em.refresh(certificateToBeUpdated);
+            em.merge(certificateWithUpdates);
+            em.flush();
+        }
+        return certificateToBeUpdated;
+    }
+
+    /**
+     * To delete a medical certificate by ID
+     * 
+     * @param id - ID of the medical certificate to delete
+     */
+    @Transactional
+    public void deleteMedicalCertificateById(int id) {
+        MedicalCertificate certificate = getById(MedicalCertificate.class, "MedicalCertificate.findById", id);
+        if (certificate != null) {
+            em.refresh(certificate);
+            em.remove(certificate);
+        }
+    }
+    
+    /**
+     * To persist a new prescription
+     * 
+     * @param newPrescription - The new Prescription entity to persist
+     * @return The persisted Prescription entity with generated values
+     */
+    @Transactional
+    public Prescription persistPrescription(Prescription newPrescription) {
+        em.persist(newPrescription);
+        em.flush(); // Ensure immediate synchronization with the database
+        return newPrescription;
+    }
+
+    
+    /**
+     * To update a prescription
+     * 
+     * @param id - ID of the entity to update
+     * @param prescriptionWithUpdates - Entity with updated information
+     * @return Entity with updated information
+     */
+    @Transactional
+    public Prescription updatePrescriptionById(PrescriptionPK id, Prescription prescriptionWithUpdates) {
+        Prescription prescriptionToBeUpdated = getById(Prescription.class, "Prescription.findById", id);
+        if (prescriptionToBeUpdated != null) {
+            em.refresh(prescriptionToBeUpdated);
+            em.merge(prescriptionWithUpdates);
+            em.flush();
+        }
+        return prescriptionToBeUpdated;
+    }
+    
+    /**
+     * To delete a prescription by ID
+     * 
+     * @param id - Composite key (PrescriptionPK) of the prescription to delete
+     */
+    @Transactional
+    public void deletePrescriptionById(PrescriptionPK id) {
+        Prescription prescription = getById(Prescription.class, "Prescription.findById", id);
+        if (prescription != null) {
+            em.refresh(prescription);
+            em.remove(prescription);
+        }
+    }
+    /**
+     * Persist a new Medicine entity.
+     * 
+     * @param newMedicine - Medicine entity to persist.
+     * @return Persisted Medicine entity.
+     */
+    @Transactional
+    public Medicine persistMedicine(Medicine newMedicine) {
+        em.persist(newMedicine);
+        em.flush();
+        return newMedicine;
+    }
+
+    /**
+     * Update an existing Medicine entity by its ID.
+     * 
+     * @param id - ID of the Medicine to update.
+     * @param updatedMedicine - Medicine entity with updated details.
+     * @return Updated Medicine entity or null if not found.
+     */
+    @Transactional
+    public Medicine updateMedicineById(int id, Medicine updatedMedicine) {
+        Medicine medicineToBeUpdated = em.find(Medicine.class, id);
+        if (medicineToBeUpdated != null) {
+            updatedMedicine.setId(id); // Ensure the ID remains consistent
+            em.merge(updatedMedicine);
+            em.flush();
+            return updatedMedicine;
+        }
+        return null; // Return null if the Medicine entity with the specified ID does not exist
+    }
+
+    /**
+     * Delete a Medicine entity by its ID.
+     * 
+     * @param id - ID of the Medicine to delete.
+     */
+    @Transactional
+    public void deleteMedicineById(int id) {
+        Medicine medicine = em.find(Medicine.class, id);
+        if (medicine != null) {
+            em.remove(medicine);
+        }
+    }
+
+    
+  
+
+
 }

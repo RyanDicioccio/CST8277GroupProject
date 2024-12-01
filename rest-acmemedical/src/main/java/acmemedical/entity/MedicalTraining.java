@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import jakarta.persistence.Embedded;
+import jakarta.persistence.NamedQuery;
 
 @SuppressWarnings("unused")
 
@@ -20,6 +21,7 @@ import jakarta.persistence.Embedded;
  */
 //TODO MT01 - Add the missing annotations.
 //TODO MT02 - Do we need a mapped super class?  If so, which one?
+@NamedQuery(name = "MedicalTraining.findById", query = "SELECT mt FROM MedicalTraining mt WHERE mt.id = :id")
 public class MedicalTraining extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
