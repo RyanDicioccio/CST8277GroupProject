@@ -1,7 +1,12 @@
 /********************************************************************************************************
  * File:  Prescription.java Course Materials CST 8277
- *
+ * Last Updated: 2024-12-02
+ * 
  * @author Teddy Yap
+ * @author Dan Blais
+ * @author Imed Cherabi
+ * @author Ryan Di Cioccio
+ * @author Aaron Renshaw
  * 
  */
 package acmemedical.entity;
@@ -45,10 +50,14 @@ public class Prescription extends PojoBaseCompositeKey<PrescriptionPK> implement
 	@JoinColumn(name = "physician_id", referencedColumnName = "id", nullable = false)
 	private Physician physician;
 
-	//TODO PR01 - Add missing annotations.  Similar to physician, this field is a part of the composite key of this entity.  What should be the cascade and fetch types?  Reference to a patient is not optional.
+	//TODO PR01 - Add missing annotations. Similar to physician, this field is a part of the composite key of this entity.  What should be the cascade and fetch types?  Reference to a patient is not optional.
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "patient_id", nullable = false)
 	private Patient patient;
 
 	//TODO PR02 - Add missing annotations.  What should be the cascade and fetch types?
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "medicine_id", nullable = false)
 	private Medicine medicine;
 
 	@Column(name = "number_of_refills")

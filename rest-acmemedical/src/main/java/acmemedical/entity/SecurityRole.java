@@ -1,19 +1,30 @@
 /********************************************************************************************************
- * File:  SecurityRole.java Course Materials CST 8277
- *
- * @author Teddy Yap
- * @author Shariar (Shawn) Emami
+ * File:  SecutiryRole.java Course Materials CST 8277
+ * Last Updated: 2024-12-02
  * 
- */
-package acmemedical.entity;
+ * @author Teddy Yap
+ * @author Dan Blais
+ * @author Imed Cherabi
+ * @author Ryan Di Cioccio
+ * @author Aaron Renshaw
+ * 
+ */ acmemedical.entity;
 
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Table;
+import jakarta.persistence.FetchType;
 
 @SuppressWarnings("unused")
 
@@ -22,18 +33,24 @@ import jakarta.persistence.NamedQuery;
  */
 //TODO SR01 - Make this into JPA entity and add all necessary annotations inside the class.
 @Entity
+@Table(name = "SECURITY_ROLE")
 @NamedQuery(name = "SecurityRole.findRoleByName", query = "SELECT r FROM SecurityRole r WHERE r.roleName = :param1")
 public class SecurityRole implements Serializable {
     /** Explicit set serialVersionUID */
     private static final long serialVersionUID = 1L;
 
-    //TODO SR02 - Add annotations.
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID", nullable = false)
     protected int id;
     
     //TODO SR03 - Add annotations.
+    @Column(name = "ROLE_NAME", nullable = false, unique = true, length = 50)
     protected String roleName;
     
     //TODO SR04 - Add annotations.
+    @ManyToMany(mappedBy = "roles", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     protected Set<SecurityUser> users = new HashSet<SecurityUser>();
 
     public SecurityRole() {
