@@ -1,8 +1,13 @@
 /********************************************************************************************************
  * File:  PojoBaseCompositeKey.java Course Materials CST 8277
+ * Last Updated: 2024-12-02
  *
  * @author Teddy Yap
- * @author Shariar (Shawn) Emami
+ * @author Shariar (Shawn) Emami 
+ * @author Dan Blais
+ * @author Imed Cherabi
+ * @author Ryan Di Cioccio
+ * @author Aaron Renshaw
  * 
  */
 package acmemedical.entity;
@@ -11,25 +16,33 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import jakarta.persistence.Access;
+import jakarta.persistence.AccessType;
+import jakarta.persistence.Column;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Version;
+
 @SuppressWarnings("unused")
 
-/**
- * Abstract class that is base of (class) hierarchy for all @Entity classes
- * @param <ID> - type of composite key used
- */
-//TODO PC01 - Add annotation to define this class as superclass of all entities.  Please see Week 9 lecture slides.
-//TODO PC02 - Add annotation to place all JPA annotations on fields.
-//TODO PC03 - Add annotation for listener class.
+@MappedSuperclass
+@EntityListeners(PojoCompositeListener.class)
+@Access(AccessType.FIELD)
 public abstract class PojoBaseCompositeKey<ID extends Serializable> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	// TODO PC04 - Add missing annotations.
+	@Version
 	protected int version;
 
-	// TODO PC05 - Add missing annotations (hint, is this column on DB?).
+	@Column(name = "created", updatable = false)
+    @CreationTimestamp
 	protected LocalDateTime created;
 
-	// TODO PC06 - Add missing annotations (hint, is this column on DB?).
+	@Column(name = "updated")
+    @UpdateTimestamp 
 	protected LocalDateTime updated;
 
 	public abstract ID getId();

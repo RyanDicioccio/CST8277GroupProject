@@ -2,7 +2,6 @@ package acmemedical.rest.resource;
 
 import static acmemedical.utility.MyConstants.ADMIN_ROLE;
 import static acmemedical.utility.MyConstants.PATIENT_RESOURCE_NAME;
-import static acmemedical.utility.MyConstants.PHYSICIAN_PATIENT_MEDICINE_RESOURCE_PATH;
 import static acmemedical.utility.MyConstants.RESOURCE_PATH_ID_ELEMENT;
 import static acmemedical.utility.MyConstants.RESOURCE_PATH_ID_PATH;
 
@@ -10,7 +9,6 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import acmemedical.ejb.ACMEMedicalService;
-import acmemedical.entity.Medicine;
 import acmemedical.entity.Patient;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ejb.EJB;
