@@ -24,6 +24,8 @@ import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Inheritance;
@@ -39,6 +41,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "medical_school")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE) 
+@DiscriminatorColumn(name = "public", discriminatorType = DiscriminatorType.STRING)
 @JsonTypeInfo(include = JsonTypeInfo.As.PROPERTY, use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
     @JsonSubTypes.Type(value = PublicSchool.class, name = "PublicSchool"),
@@ -62,7 +65,7 @@ public abstract class MedicalSchool extends PojoBase implements Serializable {
 	private Set<MedicalTraining> medicalTrainings = new HashSet<>();
 
 	@Basic(optional = false)
-	@Column(name = "public", nullable = false)
+	@Column(name = "public", nullable = false, insertable = false, updatable = false)
 	private boolean isPublic;
 
 	public MedicalSchool() {

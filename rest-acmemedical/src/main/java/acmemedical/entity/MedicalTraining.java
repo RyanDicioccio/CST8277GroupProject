@@ -40,12 +40,11 @@ import jakarta.persistence.Table;
 public class MedicalTraining extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	@ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+	@ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name = "school_id")
 	private MedicalSchool school;
 
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "certificate_id")
+	@OneToOne(mappedBy = "medicalTraining")
 	private MedicalCertificate certificate;
 
 	@Embedded

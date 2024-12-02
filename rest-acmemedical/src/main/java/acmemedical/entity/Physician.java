@@ -46,7 +46,7 @@ public class Physician extends PojoBase implements Serializable {
 	@Column(name = "last_name")
 	private String lastName;
 
-	@OneToMany(mappedBy = "owner", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "owner", cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
 	private Set<MedicalCertificate> medicalCertificates = new HashSet<>();
 
 	@OneToMany(mappedBy = "physician", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
