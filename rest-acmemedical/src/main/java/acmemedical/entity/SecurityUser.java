@@ -34,7 +34,7 @@ import jakarta.persistence.OneToOne;
  * User class used for (JSR-375) Jakarta EE Security authorization/authentication
  */
 
-//TODO SU01 - Make this into JPA entity and add all the necessary annotations inside the class.
+//TODONE SU01 - Make this into JPA entity and add all the necessary annotations inside the class.
 @Entity
 @NamedQuery(name = "SecurityUser.findByPhysicianId", query = "SELECT u FROM SecurityUser u WHERE u.physician.id = :param1")
 public class SecurityUser implements Serializable, Principal {
