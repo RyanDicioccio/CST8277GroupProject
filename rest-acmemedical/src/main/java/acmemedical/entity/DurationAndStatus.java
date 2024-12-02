@@ -1,7 +1,12 @@
 /********************************************************************************************************
  * File:  DurationAndStatus.java Course Materials CST 8277
+ * Last Updated: 2024-12-02
  *
- * @author Teddy Yap
+ * @author Teddy Yap 
+ * @author Dan Blais
+ * @author Imed Cherabi
+ * @author Ryan Di Cioccio
+ * @author Aaron Renshaw
  * 
  */
 package acmemedical.entity;
@@ -10,17 +15,20 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-//TODO DS01 - This class is not an entity however it can be embedded in other entities.  Add missing annotation.
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+
+@Embeddable
 public class DurationAndStatus implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	// TODO DS02 - Add annotations
+	@Column(name = "start_date")
 	private LocalDateTime startDate;
 	
-	// TODO DS03 - Add annotations
+	@Column(name = "end_date")
 	private LocalDateTime endDate;
 
-	// TODO DS04 - Add annotations
+	@Column(name = "active")
 	private byte active;
 
 	public DurationAndStatus() {
