@@ -34,7 +34,7 @@ import jakarta.persistence.Table;
  * The persistent class for the medical_training database table.
  */
 @Entity
-@Table(name = "MedicalCertificate")
+@Table(name = "MedicalTraining")
 @NamedQuery(name = "MedicalTraining.findById", query = "SELECT mt FROM MedicalTraining mt WHERE mt.id = :id")
 @AttributeOverride(name = "id", column = @Column(name = "medical_training_id"))
 public class MedicalTraining extends PojoBase implements Serializable {

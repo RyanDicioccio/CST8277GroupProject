@@ -17,23 +17,42 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+
 /**
  * The persistent class for the medical_school database table.
  */
-//TODO MS01 - Add the missing annotations.
-//TODO MS02 - MedicalSchool has subclasses PublicSchool and PrivateSchool.  Look at Week 9 slides for InheritanceType.
-//TODO MS03 - Do we need a mapped super class?  If so, which one?
-//TODO MS04 - Add in JSON annotations to indicate different sub-classes of MedicalSchool
+@Entity
+@Table(name = "medical_school")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE) 
+@JsonTypeInfo(include = JsonTypeInfo.As.PROPERTY, use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes({
+ @JsonSubTypes.Type(value = PublicSchool.class, name = "PublicSchool"),
+ @JsonSubTypes.Type(value = PrivateSchool.class, name = "PrivateSchool")
+})
 public abstract class MedicalSchool extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	// TODO MS05 - Add the missing annotations.
+	
+	 @Basic(optional = false)
+	 @Column(name = "name", nullable = false, length = 100)
 	private String name;
 
-	// TODO MS06 - Add the 1:M annotation.  What should be the cascade and fetch types?
+	
+	 @OneToMany(mappedBy = "medicalSchool", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<MedicalTraining> medicalTrainings = new HashSet<>();
 
-	// TODO MS07 - Add missing annotation.
+	 @Basic(optional = false)
+	 @Column(name = "is_public", nullable = false)
 	private boolean isPublic;
 
 	public MedicalSchool() {

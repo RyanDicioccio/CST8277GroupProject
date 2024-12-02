@@ -1,11 +1,14 @@
 /********************************************************************************************************
  * File:  SecurityUser.java Course Materials CST 8277
- *
- * @author Teddy Yap
- * @author Shariar (Shawn) Emami
+ * Last Updated: 2024-12-02
  * 
- */
-package acmemedical.entity;
+ * @author Teddy Yap
+ * @author Dan Blais
+ * @author Imed Cherabi
+ * @author Ryan Di Cioccio
+ * @author Aaron Renshaw
+ * 
+ */ acmemedical.entity;
 
 import java.io.Serializable;
 import java.security.Principal;
