@@ -31,6 +31,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 @SuppressWarnings("unused")
 
@@ -39,7 +40,9 @@ import jakarta.persistence.OneToOne;
  */
 
 @Entity
+@Table(name = "security_user")
 @NamedQuery(name = "SecurityUser.findByPhysicianId", query = "SELECT u FROM SecurityUser u WHERE u.physician.id = :param1")
+@NamedQuery(name = "SecurityUser.findUserByName", query = "SELECT u FROM SecurityUser u WHERE u.username = :param1")
 public class SecurityUser implements Serializable, Principal {
     /** Explicit set serialVersionUID */
     private static final long serialVersionUID = 1L;
@@ -61,7 +64,7 @@ public class SecurityUser implements Serializable, Principal {
     
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-    	name = "user_has_roles",
+    	name = "user_has_role",
         joinColumns = @JoinColumn(name = "user_id"),
         inverseJoinColumns = @JoinColumn(name = "role_id")
     )

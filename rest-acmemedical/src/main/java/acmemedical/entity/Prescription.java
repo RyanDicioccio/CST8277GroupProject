@@ -54,8 +54,9 @@ public class Prescription extends PojoBaseCompositeKey<PrescriptionPK> implement
 	@JoinColumn(name = "physician_id", referencedColumnName = "id", nullable = false)
 	private Physician physician;
 
+	@MapsId("patientId")
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "patient_id", nullable = false)
+	@JoinColumn(name = "patient_id", referencedColumnName = "patient_id", nullable = false)
 	private Patient patient;
 
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
