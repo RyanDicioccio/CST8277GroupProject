@@ -34,18 +34,18 @@ import jakarta.persistence.Table;
  * The persistent class for the medical_training database table.
  */
 @Entity
-@Table(name = "MedicalTraining")
+@Table(name = "medical_training")
 @NamedQuery(name = "MedicalTraining.findById", query = "SELECT mt FROM MedicalTraining mt WHERE mt.id = :id")
-@AttributeOverride(name = "id", column = @Column(name = "medical_training_id"))
+@AttributeOverride(name = "id", column = @Column(name = "training_id"))
 public class MedicalTraining extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
-    @JoinColumn(name = "medical_school_id")
+    @JoinColumn(name = "school_id")
 	private MedicalSchool school;
 
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "medical_certificate_id")
+    @JoinColumn(name = "certificate_id")
 	private MedicalCertificate certificate;
 
 	@Embedded

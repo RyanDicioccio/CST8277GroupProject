@@ -22,6 +22,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
@@ -33,7 +35,7 @@ import jakarta.persistence.FetchType;
  * Role class used for (JSR-375) Jakarta EE Security authorization/authentication
  */
 @Entity
-@Table(name = "SECURITY_ROLE")
+@Table(name = "security_role")
 @NamedQuery(name = "SecurityRole.findRoleByName", query = "SELECT r FROM SecurityRole r WHERE r.roleName = :param1")
 public class SecurityRole implements Serializable {
     /** Explicit set serialVersionUID */
@@ -42,14 +44,13 @@ public class SecurityRole implements Serializable {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", nullable = false)
+    @Column(name = "role_id", nullable = false)
     protected int id;
     
-    //TODO SR03 - Add annotations.
-    @Column(name = "ROLE_NAME", nullable = false, unique = true, length = 50)
+    @Column(name = "name", nullable = false, unique = true, length = 50)
     protected String roleName;
     
-    @ManyToMany(mappedBy = "roles", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
     protected Set<SecurityUser> users = new HashSet<SecurityUser>();
 
     public SecurityRole() {

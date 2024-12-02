@@ -31,7 +31,7 @@ import jakarta.persistence.Table;
  * The persistent class for the patient database table.
  */
 @Entity
-@Table(name = "Patient")
+@Table(name = "patient")
 @NamedQuery(name = "Patient.findAll", query = "SELECT p FROM Patient p")
 @NamedQuery(name = "Patient.findById", query = "SELECT p FROM Patient p WHERE p.id = :param1")
 @AttributeOverride(name = "id", column = @Column(name = "patient_id"))
@@ -44,16 +44,16 @@ public class Patient extends PojoBase implements Serializable {
 	@Column(name = "last_name")
 	private String lastName;
 
-	@Column(name = "year") 
+	@Column(name = "year_of_birth") 
 	private int year;
 
-	@Column(name = "address")
+	@Column(name = "home_address")
 	private String address;
 
-	@Column(name = "height")
+	@Column(name = "height_cm")
 	private int height;
 
-	@Column(name = "weight")
+	@Column(name = "weight_kg")
 	private int weight;
 
 	@Column(name = "smoker")

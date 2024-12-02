@@ -20,6 +20,7 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -40,27 +41,28 @@ import jakarta.persistence.Table;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE) 
 @JsonTypeInfo(include = JsonTypeInfo.As.PROPERTY, use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
- @JsonSubTypes.Type(value = PublicSchool.class, name = "PublicSchool"),
- @JsonSubTypes.Type(value = PrivateSchool.class, name = "PrivateSchool")
+    @JsonSubTypes.Type(value = PublicSchool.class, name = "PublicSchool"),
+    @JsonSubTypes.Type(value = PrivateSchool.class, name = "PrivateSchool")
 })
 @NamedQueries({
     @NamedQuery(name = "MedicalSchool.isDuplicate", query = "SELECT COUNT(ms) FROM MedicalSchool ms WHERE ms.name = :name"),
     @NamedQuery(name = "MedicalSchool.findById", query = "SELECT ms FROM MedicalSchool ms WHERE ms.id = :id")
 })
+@AttributeOverride(name = "id", column = @Column(name = "school_id"))
 public abstract class MedicalSchool extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	
-	 @Basic(optional = false)
-	 @Column(name = "name", nullable = false, length = 100)
+	@Basic(optional = false)
+	@Column(name = "name", nullable = false, length = 100)
 	private String name;
 
 	
-	 @OneToMany(mappedBy = "medicalSchool", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "medicalSchool", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<MedicalTraining> medicalTrainings = new HashSet<>();
 
-	 @Basic(optional = false)
-	 @Column(name = "is_public", nullable = false)
+	@Basic(optional = false)
+	@Column(name = "public", nullable = false)
 	private boolean isPublic;
 
 	public MedicalSchool() {

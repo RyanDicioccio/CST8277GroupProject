@@ -28,7 +28,7 @@ import jakarta.persistence.Table;
 @SuppressWarnings("unused")
 
 @Entity
-@Table(name = "Physician")
+@Table(name = "physician")
 @NamedQueries({
     @NamedQuery(name = "Physician.findAll", query = "SELECT p FROM Physician p"),
     @NamedQuery(name = "Physician.findById", query = "SELECT p FROM Physician p WHERE p.id = :id")
