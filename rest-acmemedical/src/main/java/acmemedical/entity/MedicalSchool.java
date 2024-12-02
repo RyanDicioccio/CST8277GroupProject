@@ -21,10 +21,14 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import jakarta.persistence.Basic;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -38,6 +42,10 @@ import jakarta.persistence.Table;
 @JsonSubTypes({
  @JsonSubTypes.Type(value = PublicSchool.class, name = "PublicSchool"),
  @JsonSubTypes.Type(value = PrivateSchool.class, name = "PrivateSchool")
+})
+@NamedQueries({
+    @NamedQuery(name = "MedicalSchool.isDuplicate", query = "SELECT COUNT(ms) FROM MedicalSchool ms WHERE ms.name = :name"),
+    @NamedQuery(name = "MedicalSchool.findById", query = "SELECT ms FROM MedicalSchool ms WHERE ms.id = :id")
 })
 public abstract class MedicalSchool extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -64,7 +72,6 @@ public abstract class MedicalSchool extends PojoBase implements Serializable {
         this.isPublic = isPublic;
     }
 
-	// TODO MS08 - Is an annotation needed here?
 	public Set<MedicalTraining> getMedicalTrainings() {
 		return medicalTrainings;
 	}

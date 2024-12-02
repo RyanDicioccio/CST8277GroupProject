@@ -3,6 +3,10 @@
  *
  * @author Teddy Yap
  * @author Shariar (Shawn) Emami
+ * @author Dan Blais
+ * @author Ryan Di Cioccio
+ * @author Imed Cherabi
+ * @author Aaron Renshaw
  * 
  */
 package acmemedical.rest.resource;

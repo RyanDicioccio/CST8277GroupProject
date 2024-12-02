@@ -1,3 +1,13 @@
+/********************************************************************************************************
+ * File:  MedicalCertificateResource.java Course Materials CST 8277
+ * Last Updated: 2024-12-02
+ * 
+ * @author Dan Blais
+ * @author Imed Cherabi
+ * @author Ryan Di Cioccio
+ * @author Aaron Renshaw
+ * 
+ */
 package acmemedical.rest.resource;
 
 import static acmemedical.utility.MyConstants.ADMIN_ROLE;
@@ -27,12 +37,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
-
-/**
- * This is a resource class for the MedicalCertificate Entity of the application.
- * 
- * @author Ryan Di Cioccio
- */
 
 @Path(MEDICAL_CERTIFICATE_RESOURCE_NAME)
 @Consumes(MediaType.APPLICATION_JSON)

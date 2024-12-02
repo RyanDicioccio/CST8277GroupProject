@@ -8,7 +8,8 @@
  * @author Ryan Di Cioccio
  * @author Aaron Renshaw
  * 
- */ acmemedical.entity;
+ */
+package acmemedical.entity;
 
 import java.io.Serializable;
 import java.security.Principal;

@@ -1,3 +1,14 @@
+/********************************************************************************************************
+ * File:  MedicalTraining.java Course Materials CST 8277
+ * Last Updated: 2024-12-02
+ * 
+ * @author Teddy Yap
+ * @author Dan Blais
+ * @author Imed Cherabi
+ * @author Ryan Di Cioccio
+ * @author Aaron Renshaw
+ * 
+ */
 package acmemedical.rest.resource;
 
 import static acmemedical.utility.MyConstants.ADMIN_ROLE;
@@ -12,6 +23,7 @@ import org.apache.logging.log4j.Logger;
 
 import acmemedical.ejb.ACMEMedicalService;
 import acmemedical.entity.Prescription;
+import acmemedical.entity.PrescriptionPK;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ejb.EJB;
 import jakarta.inject.Inject;
@@ -31,7 +43,6 @@ import jakarta.ws.rs.core.Response.Status;
 /**
  * This is a resource class for the Prescription Entity of the application.
  * 
- * @author Ryan Di Cioccio
  */
 
 @Path(PRESCRIPTION_RESOURCE_NAME)
@@ -60,15 +71,13 @@ public class PrescriptionResource {
     @Path(RESOURCE_PATH_ID_PATH)
     public Response getPrescriptionById(@PathParam(RESOURCE_PATH_ID_ELEMENT) String id) {
         LOG.debug("Trying to retrieve specific prescription with ID " + id);
+        String[] idParts = id.split(":");
+        int physicianId = Integer.parseInt(idParts[0]);
+        int patientId = Integer.parseInt(idParts[1]);
+        PrescriptionPK prescriptionPK = new PrescriptionPK(physicianId, patientId);
         Response response = null;
-        Prescription prescription = null;
-
-        if (sc.isCallerInRole(ADMIN_ROLE)) {
-            prescription = service.getById(Prescription.class, "Prescription.findById", id);
-            response = Response.status(prescription == null ? Status.NOT_FOUND : Status.OK).entity(prescription).build();
-        } else {
-            response = Response.status(Status.BAD_REQUEST).build();
-        }
+        Prescription prescription = service.getPrescriptionById(prescriptionPK);
+        response = Response.status(prescription == null ? Status.NOT_FOUND : Status.OK).entity(prescription).build();
         return response;
     }
 
@@ -87,8 +96,12 @@ public class PrescriptionResource {
     @Path(RESOURCE_PATH_ID_PATH)
     public Response updatePrescription(@PathParam(RESOURCE_PATH_ID_ELEMENT) String id, Prescription updatedPrescription) {
         LOG.debug("Updating prescription with ID " + id);
+        String[] idParts = id.split(":");
+        int physicianId = Integer.parseInt(idParts[0]);
+        int patientId = Integer.parseInt(idParts[1]);
+        PrescriptionPK prescriptionPK = new PrescriptionPK(physicianId, patientId);
         Response response = null;
-        Prescription prescription = service.updatePrescriptionById(id, updatedPrescription);
+        Prescription prescription = service.updatePrescriptionById(prescriptionPK, updatedPrescription);
         response = Response.ok(prescription).build();
         return response;
     }
@@ -98,8 +111,12 @@ public class PrescriptionResource {
     @Path(RESOURCE_PATH_ID_PATH)
     public Response deletePrescriptionById(@PathParam(RESOURCE_PATH_ID_ELEMENT) String id) {
         LOG.debug("Deleting prescription with ID " + id);
+        String[] idParts = id.split(":");
+        int physicianId = Integer.parseInt(idParts[0]);
+        int patientId = Integer.parseInt(idParts[1]);
+        PrescriptionPK prescriptionPK = new PrescriptionPK(physicianId, patientId);
         Response response = null;
-        service.deletePrescriptionById(id);
+        service.deletePrescriptionById(prescriptionPK);
         response = Response.status(Status.NO_CONTENT).build();
         return response;
     }

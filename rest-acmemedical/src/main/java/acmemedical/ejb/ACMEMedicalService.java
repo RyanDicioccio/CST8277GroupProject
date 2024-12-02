@@ -1,8 +1,13 @@
 /********************************************************************************************************
  * File:  ACMEMedicalService.java Course Materials CST 8277
+ * Last Updated 2024-12-02
  *
  * @author Teddy Yap
  * @author Shariar (Shawn) Emami
+ * @author Dan Blais
+ * @author Ryan Di Cioccio
+ * @author Imed Cherabi
+ * @author Aaron Renshaw
  * 
  */
 package acmemedical.ejb;
@@ -20,10 +25,6 @@ import static acmemedical.utility.MyConstants.PROPERTY_KEY_SIZE;
 import static acmemedical.utility.MyConstants.PROPERTY_SALT_SIZE;
 import static acmemedical.utility.MyConstants.PU_NAME;
 import static acmemedical.utility.MyConstants.USER_ROLE;
-import static acmemedical.entity.Physician.ALL_PHYSICIANS_QUERY_NAME;
-import static acmemedical.entity.MedicalSchool.ALL_MEDICAL_SCHOOLS_QUERY_NAME;
-import static acmemedical.entity.MedicalSchool.IS_DUPLICATE_QUERY_NAME;
-import static acmemedical.entity.MedicalSchool.SPECIFIC_MEDICAL_SCHOOL_QUERY_NAME;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -218,11 +219,17 @@ public class ACMEMedicalService implements Serializable {
         cq.select(cq.from(MedicalSchool.class));
         return em.createQuery(cq).getResultList();
     }
+    
+    public Prescription getPrescriptionById(PrescriptionPK id) {
+        TypedQuery<Prescription> query = em.createNamedQuery("Prescription.findByPrescriptionPK", Prescription.class);
+        query.setParameter(PARAM1, id);
+        return query.getSingleResult();
+    }
 
     // Why not use the build-in em.find?  The named query SPECIFIC_MEDICAL_SCHOOL_QUERY_NAME
     // includes JOIN FETCH that we cannot add to the above API
     public MedicalSchool getMedicalSchoolById(int id) {
-        TypedQuery<MedicalSchool> specificMedicalSchoolQuery = em.createNamedQuery(SPECIFIC_MEDICAL_SCHOOL_QUERY_NAME, MedicalSchool.class);
+        TypedQuery<MedicalSchool> specificMedicalSchoolQuery = em.createNamedQuery("MedicalSchool.findById", MedicalSchool.class);
         specificMedicalSchoolQuery.setParameter(PARAM1, id);
         return specificMedicalSchoolQuery.getSingleResult();
     }
@@ -243,14 +250,14 @@ public class ACMEMedicalService implements Serializable {
     @Transactional
     public MedicalSchool deleteMedicalSchool(int id) {
         //MedicalSchool ms = getMedicalSchoolById(id);
-    	MedicalSchool ms = getById(MedicalSchool.class, MedicalSchool.SPECIFIC_MEDICAL_SCHOOL_QUERY_NAME, id);
+    	MedicalSchool ms = getById(MedicalSchool.class, "MedicalSchool.findById", id);
         if (ms != null) {
             Set<MedicalTraining> medicalTrainings = ms.getMedicalTrainings();
             List<MedicalTraining> list = new LinkedList<>();
             medicalTrainings.forEach(list::add);
             list.forEach(mt -> {
                 if (mt.getCertificate() != null) {
-                    MedicalCertificate mc = getById(MedicalCertificate.class, MedicalCertificate.ID_CARD_QUERY_NAME, mt.getCertificate().getId());
+                    MedicalCertificate mc = getById(MedicalCertificate.class, "MedicalCertificate.findById", mt.getCertificate().getId());
                     mc.setMedicalTraining(null);
                 }
                 mt.setCertificate(null);
@@ -265,7 +272,7 @@ public class ACMEMedicalService implements Serializable {
     // Please study & use the methods below in your test suites
     
     public boolean isDuplicated(MedicalSchool newMedicalSchool) {
-        TypedQuery<Long> allMedicalSchoolsQuery = em.createNamedQuery(IS_DUPLICATE_QUERY_NAME, Long.class);
+        TypedQuery<Long> allMedicalSchoolsQuery = em.createNamedQuery("MedicalSchool.isDuplicate", Long.class);
         allMedicalSchoolsQuery.setParameter(PARAM1, newMedicalSchool.getName());
         return (allMedicalSchoolsQuery.getSingleResult() >= 1);
     }
@@ -295,7 +302,7 @@ public class ACMEMedicalService implements Serializable {
     }
     
     public MedicalTraining getMedicalTrainingById(int mtId) {
-        TypedQuery<MedicalTraining> allMedicalTrainingQuery = em.createNamedQuery(MedicalTraining.FIND_BY_ID, MedicalTraining.class);
+        TypedQuery<MedicalTraining> allMedicalTrainingQuery = em.createNamedQuery("MedicalTraining.findById", MedicalTraining.class);
         allMedicalTrainingQuery.setParameter(PARAM1, mtId);
         return allMedicalTrainingQuery.getSingleResult();
     }
@@ -411,7 +418,10 @@ public class ACMEMedicalService implements Serializable {
      */
     @Transactional
     public Prescription updatePrescriptionById(PrescriptionPK id, Prescription prescriptionWithUpdates) {
-        Prescription prescriptionToBeUpdated = getById(Prescription.class, "Prescription.findById", id);
+        TypedQuery<Prescription> query = em.createNamedQuery("Prescription.findById", Prescription.class);
+        query.setParameter(PARAM1, id);
+        Prescription prescriptionToBeUpdated = query.getSingleResult();
+        
         if (prescriptionToBeUpdated != null) {
             em.refresh(prescriptionToBeUpdated);
             em.merge(prescriptionWithUpdates);
@@ -427,12 +437,17 @@ public class ACMEMedicalService implements Serializable {
      */
     @Transactional
     public void deletePrescriptionById(PrescriptionPK id) {
-        Prescription prescription = getById(Prescription.class, "Prescription.findById", id);
+        TypedQuery<Prescription> query = em.createNamedQuery("Prescription.findById", Prescription.class);
+        query.setParameter(PARAM1, id);
+
+        Prescription prescription = query.getSingleResult();
+        
         if (prescription != null) {
             em.refresh(prescription);
             em.remove(prescription);
         }
     }
+    
     /**
      * Persist a new Medicine entity.
      * 

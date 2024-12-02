@@ -8,7 +8,8 @@
  * @author Ryan Di Cioccio
  * @author Aaron Renshaw
  * 
- */ acmemedical.entity;
+ */
+package acmemedical.entity;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -31,7 +32,6 @@ import jakarta.persistence.FetchType;
 /**
  * Role class used for (JSR-375) Jakarta EE Security authorization/authentication
  */
-//TODO SR01 - Make this into JPA entity and add all necessary annotations inside the class.
 @Entity
 @Table(name = "SECURITY_ROLE")
 @NamedQuery(name = "SecurityRole.findRoleByName", query = "SELECT r FROM SecurityRole r WHERE r.roleName = :param1")
@@ -49,7 +49,6 @@ public class SecurityRole implements Serializable {
     @Column(name = "ROLE_NAME", nullable = false, unique = true, length = 50)
     protected String roleName;
     
-    //TODO SR04 - Add annotations.
     @ManyToMany(mappedBy = "roles", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     protected Set<SecurityUser> users = new HashSet<SecurityUser>();
 

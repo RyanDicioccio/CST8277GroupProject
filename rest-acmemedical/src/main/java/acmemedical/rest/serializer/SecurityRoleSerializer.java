@@ -1,11 +1,15 @@
 /********************************************************************************************************
  * File:  SecurityRoleSerializer.java
  * Course Materials CST 8277
+ * Last Updated 2024-12-02
  *
  * @author Teddy Yap
  * @author Shariar (Shawn) Emami
  * @author Mike Norman
- *
+ * @author Dan Blais
+ * @author Imed Cherabi
+ * @author Ryan Di Cioccio
+ * @author Aaron Renshaw
  */
 package acmemedical.rest.serializer;
 
