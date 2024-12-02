@@ -60,8 +60,7 @@ public class PhysicianResource {
     protected SecurityContext sc;
 
     @GET
-    //Only a user with the SecurityRole ‘ADMIN_ROLE’ can get the list of all physicians.
-    @RolesAllowed({ADMIN_ROLE})
+    @RolesAllowed({ADMIN_ROLE, USER_ROLE})
     public Response getPhysicians() {
         LOG.debug("retrieving all physicians ...");
         List<Physician> physicians = service.getAllPhysicians();

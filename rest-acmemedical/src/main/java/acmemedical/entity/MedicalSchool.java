@@ -58,7 +58,7 @@ public abstract class MedicalSchool extends PojoBase implements Serializable {
 	private String name;
 
 	
-	@OneToMany(mappedBy = "medicalSchool", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "school", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<MedicalTraining> medicalTrainings = new HashSet<>();
 
 	@Basic(optional = false)

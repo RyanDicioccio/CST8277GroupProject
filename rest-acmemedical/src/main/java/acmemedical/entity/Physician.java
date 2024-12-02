@@ -33,7 +33,6 @@ import jakarta.persistence.Table;
     @NamedQuery(name = "Physician.findAll", query = "SELECT p FROM Physician p"),
     @NamedQuery(name = "Physician.findById", query = "SELECT p FROM Physician p WHERE p.id = :id")
 })
-@AttributeOverride(name = "id", column = @Column(name = "physician_id"))
 public class Physician extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -47,7 +46,7 @@ public class Physician extends PojoBase implements Serializable {
 	@Column(name = "last_name")
 	private String lastName;
 
-	@OneToMany(mappedBy = "physician", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "owner", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
 	private Set<MedicalCertificate> medicalCertificates = new HashSet<>();
 
 	@OneToMany(mappedBy = "physician", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
