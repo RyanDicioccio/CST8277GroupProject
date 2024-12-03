@@ -62,7 +62,7 @@ public abstract class MedicalSchool extends PojoBase implements Serializable {
 	@Column(name = "name", nullable = false, length = 100)
 	private String name;
 
-	@JsonBackReference
+	@JsonBackReference("school")
 	@OneToMany(mappedBy = "school", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<MedicalTraining> medicalTrainings = new HashSet<>();
 

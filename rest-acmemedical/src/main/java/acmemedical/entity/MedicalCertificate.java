@@ -41,12 +41,10 @@ import jakarta.persistence.Table;
 public class MedicalCertificate extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	@JsonBackReference
 	@OneToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
 	@JoinColumn(name = "training_id", referencedColumnName = "training_id") 
 	private MedicalTraining medicalTraining;
 
-	@JsonManagedReference("medicalCertificate")
 	@ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinColumn(name = "physician_id")
 	private Physician owner;
