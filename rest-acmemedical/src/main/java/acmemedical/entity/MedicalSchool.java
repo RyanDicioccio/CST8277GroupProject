@@ -17,14 +17,23 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Basic;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -34,25 +43,32 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "medical_school")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE) 
-@JsonTypeInfo(include = JsonTypeInfo.As.PROPERTY, use = JsonTypeInfo.Id.NAME, property = "type")
+@DiscriminatorColumn(name = "public", discriminatorType = DiscriminatorType.INTEGER)
+@JsonTypeInfo(include = JsonTypeInfo.As.PROPERTY, use = JsonTypeInfo.Id.NAME, property = "entity-type")
 @JsonSubTypes({
- @JsonSubTypes.Type(value = PublicSchool.class, name = "PublicSchool"),
- @JsonSubTypes.Type(value = PrivateSchool.class, name = "PrivateSchool")
+    @JsonSubTypes.Type(value = PublicSchool.class, name = "public_school"),
+    @JsonSubTypes.Type(value = PrivateSchool.class, name = "private_school")
 })
+@NamedQueries({
+    @NamedQuery(name = "MedicalSchool.isDuplicate", query = "SELECT COUNT(ms) FROM MedicalSchool ms WHERE ms.name = :param1"),
+    @NamedQuery(name = "MedicalSchool.findById", query = "SELECT ms FROM MedicalSchool ms LEFT JOIN FETCH ms.medicalTrainings WHERE ms.id = :param1")
+})
+@AttributeOverride(name = "id", column = @Column(name = "school_id"))
 public abstract class MedicalSchool extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	
-	 @Basic(optional = false)
-	 @Column(name = "name", nullable = false, length = 100)
+	@Basic(optional = false)
+	@Column(name = "name", nullable = false, length = 100)
 	private String name;
 
-	
-	 @OneToMany(mappedBy = "medicalSchool", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonBackReference
+	@OneToMany(mappedBy = "school", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<MedicalTraining> medicalTrainings = new HashSet<>();
 
-	 @Basic(optional = false)
-	 @Column(name = "is_public", nullable = false)
+	@JsonProperty("entity-type")
+	@Basic(optional = false)
+	@Column(name = "public", nullable = false, insertable = false, updatable = false)
 	private boolean isPublic;
 
 	public MedicalSchool() {
@@ -64,7 +80,6 @@ public abstract class MedicalSchool extends PojoBase implements Serializable {
         this.isPublic = isPublic;
     }
 
-	// TODO MS08 - Is an annotation needed here?
 	public Set<MedicalTraining> getMedicalTrainings() {
 		return medicalTrainings;
 	}

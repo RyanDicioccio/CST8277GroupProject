@@ -8,7 +8,8 @@
  * @author Ryan Di Cioccio
  * @author Aaron Renshaw
  * 
- */ acmemedical.entity;
+ */
+package acmemedical.entity;
 
 import java.io.Serializable;
 import java.security.Principal;
@@ -30,6 +31,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 @SuppressWarnings("unused")
 
@@ -37,37 +39,34 @@ import jakarta.persistence.OneToOne;
  * User class used for (JSR-375) Jakarta EE Security authorization/authentication
  */
 
-//TODO SU01 - Make this into JPA entity and add all the necessary annotations inside the class.
 @Entity
+@Table(name = "security_user")
 @NamedQuery(name = "SecurityUser.findByPhysicianId", query = "SELECT u FROM SecurityUser u WHERE u.physician.id = :param1")
+@NamedQuery(name = "SecurityUser.findUserByName", query = "SELECT u FROM SecurityUser u WHERE u.username = :param1")
 public class SecurityUser implements Serializable, Principal {
     /** Explicit set serialVersionUID */
     private static final long serialVersionUID = 1L;
 
-    //TODONE SU02 - Add annotations.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id", nullable = false)
     protected int id;
     
-    //TODONE SU03 - Add annotations.
-    @Column(nullable = false, unique = true)
+    @Column(name = "username", nullable = false, unique = true)
     protected String username;
     
-    //TODONE SU04 - Add annotations.
-    @Column(nullable = false)
+    @Column(name = "password_hash", nullable = false)
     protected String pwHash;
     
-    //TODONE SU05 - Add annotations.
     @OneToOne
     @JoinColumn(name = "physician_id", nullable = false)
     protected Physician physician;
     
-    //TODONE SU06 - Add annotations.
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-        name = "security_user_roles",
-        joinColumns = @JoinColumn(name = "security_user_id"),
-        inverseJoinColumns = @JoinColumn(name = "security_role_id")
+    	name = "user_has_role",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     protected Set<SecurityRole> roles = new HashSet<SecurityRole>();
 

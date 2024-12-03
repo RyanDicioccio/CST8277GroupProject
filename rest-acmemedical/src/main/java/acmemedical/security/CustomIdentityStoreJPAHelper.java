@@ -1,10 +1,13 @@
 /********************************************************************************************************
  * File:  CustomIdentityStoreJPAHelper.java Course Materials CST 8277
+ * Last Updated 2024-12-02
  * 
  * @author Teddy Yap
  * @author Mike Norman
- * 
- */
+ * @author Dan Blais
+ * @author Imed Cherabi
+ * @author Ryan Di Cioccio
+ * @author Aaron Renshaw */
 package acmemedical.security;
 
 import static acmemedical.utility.MyConstants.PARAM1;
@@ -41,7 +44,7 @@ public class CustomIdentityStoreJPAHelper {
         LOG.debug("find a SecurityUser by name = {}", username);
         SecurityUser user = null;
         try {
-        	TypedQuery<SecurityUser> query = em.createNamedQuery("SecurityUser.userByName", SecurityUser.class);
+        	TypedQuery<SecurityUser> query = em.createNamedQuery("SecurityUser.findUserByName", SecurityUser.class);
         	query.setParameter(PARAM1, username);
         	user = query.getSingleResult();
         } catch (NoResultException e) {

@@ -1,8 +1,13 @@
 /********************************************************************************************************
  * File:  MedicalSchoolResource.java Course Materials CST 8277
+ * Last Updated 2024-12-02
  *
  * @author Teddy Yap
  * @author Shariar (Shawn) Emami
+ * @author Dan Blais
+ * @author Ryan Di Cioccio
+ * @author Imed Cherabi
+ * @author Aaron Renshaw
  * 
  */
 package acmemedical.rest.resource;
@@ -49,6 +54,7 @@ public class MedicalSchoolResource {
     protected SecurityContext sc;
     
     @GET
+    @RolesAllowed({ADMIN_ROLE, USER_ROLE})
     public Response getMedicalSchools() {
         LOG.debug("Retrieving all medical schools...");
         List<MedicalSchool> medicalSchools = service.getAllMedicalSchools();
@@ -58,7 +64,7 @@ public class MedicalSchoolResource {
     }
     
     @GET
-    // TODO MSR01 - Specify the roles allowed for this method
+    @RolesAllowed({ADMIN_ROLE, USER_ROLE})
     @Path("/{medicalSchoolId}")
     public Response getMedicalSchoolById(@PathParam("medicalSchoolId") int medicalSchoolId) {
         LOG.debug("Retrieving medical school with id = {}", medicalSchoolId);
@@ -68,7 +74,7 @@ public class MedicalSchoolResource {
     }
 
     @DELETE
-    // TODO MSR02 - Specify the roles allowed for this method
+    @RolesAllowed({ADMIN_ROLE})
     @Path("/{medicalSchoolId}")
     public Response deleteMedicalSchool(@PathParam("medicalSchoolId") int msId) {
         LOG.debug("Deleting medical school with id = {}", msId);
@@ -97,11 +103,10 @@ public class MedicalSchoolResource {
     @Path("/{medicalSchoolId}/medicaltraining")
     public Response addMedicalTrainingToMedicalSchool(@PathParam("medicalSchoolId") int msId, MedicalTraining newMedicalTraining) {
         LOG.debug("Adding a new MedicalTraining to medical school with id = {}", msId);
-        
         MedicalSchool ms = service.getMedicalSchoolById(msId);
         newMedicalTraining.setMedicalSchool(ms);
         ms.getMedicalTrainings().add(newMedicalTraining);
-        service.updateMedicalSchool(msId, ms);
+        service.persistMedicalSchool(ms);
         
         return Response.ok(sc).build();
     }

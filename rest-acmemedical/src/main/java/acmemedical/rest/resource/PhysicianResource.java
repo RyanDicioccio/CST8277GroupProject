@@ -1,9 +1,14 @@
 /********************************************************************************************************
  * File:  PhysicianResource.java Course Materials CST 8277
+ * Last Updated 2024-12-02
  *
  * @author Teddy Yap
  * @author Shariar (Shawn) Emami
  * @author (original) Mike Norman
+ * @author Dan Blais
+ * @author Ryan Di Cioccio
+ * @author Imed Cherabi
+ * @author Aaron Renshaw
  * 
  */
 package acmemedical.rest.resource;
@@ -22,6 +27,7 @@ import jakarta.ejb.EJB;
 import jakarta.inject.Inject;
 import jakarta.security.enterprise.SecurityContext;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -56,7 +62,6 @@ public class PhysicianResource {
     protected SecurityContext sc;
 
     @GET
-    //Only a user with the SecurityRole ‘ADMIN_ROLE’ can get the list of all physicians.
     @RolesAllowed({ADMIN_ROLE})
     public Response getPhysicians() {
         LOG.debug("retrieving all physicians ...");
@@ -116,4 +121,13 @@ public class PhysicianResource {
         return response;
     }
     
+    @DELETE
+    @RolesAllowed({ADMIN_ROLE})
+    @Path(RESOURCE_PATH_ID_PATH)
+    public Response deletePhysicianById(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id) {
+        Response response = null;
+        service.deletePhysicianById(id); 
+        response = Response.status(Status.NO_CONTENT).build();        
+        return response;
+    } 
 }

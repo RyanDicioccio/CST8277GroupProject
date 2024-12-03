@@ -14,6 +14,8 @@ package acmemedical.entity;
 import java.io.Serializable;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
 import jakarta.persistence.Basic;
@@ -25,6 +27,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
+import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
 
@@ -35,8 +38,11 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "prescription")
 @Access(AccessType.FIELD)
-@NamedQuery(name = "Prescription.findAll", query = "SELECT p FROM Prescription p")
-@NamedQuery(name = "MedicalTraining.findById", query = "SELECT mt FROM MedicalTraining mt WHERE mt.id = :id")
+@NamedQueries({
+    @NamedQuery(name = "Prescription.findAll", query = "SELECT p FROM Prescription p"),
+    @NamedQuery(name = "Prescription.findById", query = "SELECT p FROM Prescription p WHERE p.id = :param1"),
+    @NamedQuery(name = "Prescription.findByPrescriptionPK", query = "SELECT p FROM Prescription p WHERE p.id = :param1")
+})
 public class Prescription extends PojoBaseCompositeKey<PrescriptionPK> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -45,17 +51,19 @@ public class Prescription extends PojoBaseCompositeKey<PrescriptionPK> implement
 	private PrescriptionPK id;
 
 	// @MapsId is used to map a part of composite key to an entity.
+	@JsonManagedReference
 	@MapsId("physicianId")
     @ManyToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "physician_id", referencedColumnName = "id", nullable = false)
 	private Physician physician;
 
-	//TODO PR01 - Add missing annotations. Similar to physician, this field is a part of the composite key of this entity.  What should be the cascade and fetch types?  Reference to a patient is not optional.
+	@JsonManagedReference
+	@MapsId("patientId")
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "patient_id", nullable = false)
+	@JoinColumn(name = "patient_id", referencedColumnName = "patient_id", nullable = false)
 	private Patient patient;
 
-	//TODO PR02 - Add missing annotations.  What should be the cascade and fetch types?
+	@JsonManagedReference
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "medicine_id", nullable = false)
 	private Medicine medicine;

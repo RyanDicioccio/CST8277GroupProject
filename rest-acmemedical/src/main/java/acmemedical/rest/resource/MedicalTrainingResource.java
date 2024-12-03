@@ -1,6 +1,18 @@
+/********************************************************************************************************
+ * File:  MedicalTrainingResource.java Course Materials CST 8277
+ * Last Updated: 2024-12-02
+ * 
+ * @author Dan Blais
+ * @author Imed Cherabi
+ * @author Ryan Di Cioccio
+ * @author Aaron Renshaw
+ * 
+ */
+
 package acmemedical.rest.resource;
 
 import static acmemedical.utility.MyConstants.ADMIN_ROLE;
+import static acmemedical.utility.MyConstants.USER_ROLE;
 import static acmemedical.utility.MyConstants.MEDICAL_TRAINING_RESOURCE_NAME;
 import static acmemedical.utility.MyConstants.RESOURCE_PATH_ID_ELEMENT;
 import static acmemedical.utility.MyConstants.RESOURCE_PATH_ID_PATH;
@@ -27,12 +39,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
-/**
- * This is a resource class for the MedicalTraining Entity of the application.
- * 
- * @author Ryan Di Cioccio
- */
-
 @Path(MEDICAL_TRAINING_RESOURCE_NAME)
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -46,7 +52,7 @@ public class MedicalTrainingResource {
     protected SecurityContext sc;
 
     @GET
-    @RolesAllowed({ADMIN_ROLE})
+    @RolesAllowed({ADMIN_ROLE, USER_ROLE})
     public Response getMedicalTrainings() {
         LOG.debug("Retrieving all medical trainings...");
         List<MedicalTraining> trainings = service.getAll(MedicalTraining.class, "MedicalTraining.findAll");
@@ -55,19 +61,15 @@ public class MedicalTrainingResource {
     }
 
     @GET
-    @RolesAllowed({ADMIN_ROLE})
+    @RolesAllowed({ADMIN_ROLE, USER_ROLE})
     @Path(RESOURCE_PATH_ID_PATH)
     public Response getMedicalTrainingById(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id) {
         LOG.debug("Trying to retrieve specific medical training with ID " + id);
         Response response = null;
         MedicalTraining training = null;
 
-        if (sc.isCallerInRole(ADMIN_ROLE)) {
-            training = service.getById(MedicalTraining.class, "MedicalTraining.findById", id);
-            response = Response.status(training == null ? Status.NOT_FOUND : Status.OK).entity(training).build();
-        } else {
-            response = Response.status(Status.BAD_REQUEST).build();
-        }
+        training = service.getById(MedicalTraining.class, "MedicalTraining.findById", id);
+        response = Response.status(training == null ? Status.NOT_FOUND : Status.OK).entity(training).build();
         return response;
     }
 

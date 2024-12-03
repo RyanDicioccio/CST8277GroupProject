@@ -1,3 +1,14 @@
+/********************************************************************************************************
+ * File:  PatientResource.java Course Materials CST 8277
+ * Last Updated: 2024-12-02
+ * 
+ * @author Dan Blais
+ * @author Imed Cherabi
+ * @author Ryan Di Cioccio
+ * @author Aaron Renshaw
+ * 
+ */
+
 package acmemedical.rest.resource;
 
 import static acmemedical.utility.MyConstants.ADMIN_ROLE;
@@ -26,12 +37,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
-
-/**
- * This is a resource class for the patient Entity of the application.
- * 
- * @author Dan Blais
- */
 
 @Path(PATIENT_RESOURCE_NAME)
 @Consumes(MediaType.APPLICATION_JSON)

@@ -16,6 +16,9 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -34,18 +37,20 @@ import jakarta.persistence.Table;
  * The persistent class for the medical_training database table.
  */
 @Entity
-@Table(name = "MedicalTraining")
-@NamedQuery(name = "MedicalTraining.findById", query = "SELECT mt FROM MedicalTraining mt WHERE mt.id = :id")
-@AttributeOverride(name = "id", column = @Column(name = "medical_training_id"))
+@Table(name = "medical_training")
+@NamedQuery(name = "MedicalTraining.findAll", query = "SELECT mt FROM MedicalTraining mt")
+@NamedQuery(name = "MedicalTraining.findById", query = "SELECT mt FROM MedicalTraining mt WHERE mt.id = :param1")
+@AttributeOverride(name = "id", column = @Column(name = "training_id"))
 public class MedicalTraining extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	@ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
-    @JoinColumn(name = "medical_school_id")
+	@JsonManagedReference
+	@ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    @JoinColumn(name = "school_id")
 	private MedicalSchool school;
 
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "medical_certificate_id")
+	@JsonManagedReference
+	@OneToOne(mappedBy = "medicalTraining")
 	private MedicalCertificate certificate;
 
 	@Embedded
