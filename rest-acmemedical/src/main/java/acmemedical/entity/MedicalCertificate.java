@@ -35,7 +35,8 @@ import jakarta.persistence.Table;
  */
 @Entity
 @Table(name = "medical_certificate")
-@NamedQuery(name = "MedicalCertificate.findById", query = "SELECT mc FROM MedicalCertificate mc WHERE mc.id = :id")
+@NamedQuery(name = "MedicalCertificate.findAll", query = "SELECT mc FROM MedicalCertificate mc")
+@NamedQuery(name = "MedicalCertificate.findById", query = "SELECT mc FROM MedicalCertificate mc WHERE mc.id = :param1")
 @AttributeOverride(name = "id", column = @Column(name = "certificate_id"))
 public class MedicalCertificate extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -45,7 +46,7 @@ public class MedicalCertificate extends PojoBase implements Serializable {
 	@JoinColumn(name = "training_id", referencedColumnName = "training_id") 
 	private MedicalTraining medicalTraining;
 
-	@JsonManagedReference
+	@JsonManagedReference("medicalCertificate")
 	@ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinColumn(name = "physician_id")
 	private Physician owner;

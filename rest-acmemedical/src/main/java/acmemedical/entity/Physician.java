@@ -49,11 +49,11 @@ public class Physician extends PojoBase implements Serializable {
 	@Column(name = "last_name")
 	private String lastName;
 
-	@JsonBackReference
+	@JsonBackReference("medicalCertificate")
 	@OneToMany(mappedBy = "owner", cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
 	private Set<MedicalCertificate> medicalCertificates = new HashSet<>();
 
-	@JsonBackReference
+	@JsonBackReference("prescription")
 	@OneToMany(mappedBy = "physician", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
 	private Set<Prescription> prescriptions = new HashSet<>();
 

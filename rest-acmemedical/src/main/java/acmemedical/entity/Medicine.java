@@ -78,7 +78,7 @@ public class Medicine extends PojoBase implements Serializable {
 	@Transient
 	private String genericName;
 
-	@JsonBackReference
+	@JsonBackReference("medicine")
 	@OneToMany(cascade=CascadeType.MERGE, fetch = FetchType.LAZY, mappedBy = "medicine")
 	private Set<Prescription> prescriptions = new HashSet<>();
 

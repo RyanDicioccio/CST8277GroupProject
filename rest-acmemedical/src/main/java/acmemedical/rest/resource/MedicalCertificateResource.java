@@ -72,7 +72,7 @@ public class MedicalCertificateResource {
         if (sc.isCallerInRole(ADMIN_ROLE)) {
             certificate = service.getById(MedicalCertificate.class, "MedicalCertificate.findById", id);
             response = Response.status(certificate == null ? Status.NOT_FOUND : Status.OK).entity(certificate).build();
-        } else if (sc.isCallerInRole("USER_ROLE")) {
+        } else if (sc.isCallerInRole(USER_ROLE)) {
             certificate = service.getById(MedicalCertificate.class, "MedicalCertificate.findById", id);
 
             if (certificate == null) {
