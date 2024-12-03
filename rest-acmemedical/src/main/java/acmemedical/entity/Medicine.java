@@ -16,6 +16,8 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
@@ -76,13 +78,8 @@ public class Medicine extends PojoBase implements Serializable {
 	@Transient
 	private String genericName;
 
-	// Hint - @OneToMany is used to define 1:M relationship between this entity and another.
-	// Hint - @OneToMany option cascade can be added to define if changes to this entity should cascade to objects.
-	// Hint - @OneToMany option cascade will be ignored if not added, meaning no cascade effect.
-	// Hint - @OneToMany option fetch should be lazy to prevent eagerly initializing all the data.
+	@JsonBackReference
 	@OneToMany(cascade=CascadeType.MERGE, fetch = FetchType.LAZY, mappedBy = "medicine")
-	// Hint - java.util.Set is used as a collection, however List could have been used as well.
-	// Hint - java.util.Set will be unique and also possibly can provide better get performance with HashCode.
 	private Set<Prescription> prescriptions = new HashSet<>();
 
 	public Medicine() {

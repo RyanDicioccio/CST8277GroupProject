@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -61,7 +62,7 @@ public abstract class MedicalSchool extends PojoBase implements Serializable {
 	@Column(name = "name", nullable = false, length = 100)
 	private String name;
 
-	
+	@JsonBackReference
 	@OneToMany(mappedBy = "school", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<MedicalTraining> medicalTrainings = new HashSet<>();
 

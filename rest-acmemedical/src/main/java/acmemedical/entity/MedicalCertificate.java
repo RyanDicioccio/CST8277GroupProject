@@ -13,6 +13,8 @@ package acmemedical.entity;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
 import jakarta.persistence.AttributeOverride;
@@ -38,11 +40,13 @@ import jakarta.persistence.Table;
 public class MedicalCertificate extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	@OneToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+	@JsonBackReference
+	@OneToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
 	@JoinColumn(name = "training_id", referencedColumnName = "training_id") 
 	private MedicalTraining medicalTraining;
 
-	@ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+	@JsonManagedReference
+	@ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinColumn(name = "physician_id")
 	private Physician owner;
 

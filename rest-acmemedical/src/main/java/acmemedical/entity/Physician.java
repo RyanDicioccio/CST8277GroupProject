@@ -15,6 +15,9 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -46,9 +49,11 @@ public class Physician extends PojoBase implements Serializable {
 	@Column(name = "last_name")
 	private String lastName;
 
+	@JsonBackReference
 	@OneToMany(mappedBy = "owner", cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
 	private Set<MedicalCertificate> medicalCertificates = new HashSet<>();
 
+	@JsonBackReference
 	@OneToMany(mappedBy = "physician", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
 	private Set<Prescription> prescriptions = new HashSet<>();
 

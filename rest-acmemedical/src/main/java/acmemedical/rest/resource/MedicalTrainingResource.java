@@ -68,12 +68,8 @@ public class MedicalTrainingResource {
         Response response = null;
         MedicalTraining training = null;
 
-        if (sc.isCallerInRole(ADMIN_ROLE)) {
-            training = service.getById(MedicalTraining.class, "MedicalTraining.findById", id);
-            response = Response.status(training == null ? Status.NOT_FOUND : Status.OK).entity(training).build();
-        } else {
-            response = Response.status(Status.BAD_REQUEST).build();
-        }
+        training = service.getById(MedicalTraining.class, "MedicalTraining.findById", id);
+        response = Response.status(training == null ? Status.NOT_FOUND : Status.OK).entity(training).build();
         return response;
     }
 

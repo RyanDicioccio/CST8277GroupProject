@@ -16,6 +16,9 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -35,15 +38,18 @@ import jakarta.persistence.Table;
  */
 @Entity
 @Table(name = "medical_training")
-@NamedQuery(name = "MedicalTraining.findById", query = "SELECT mt FROM MedicalTraining mt WHERE mt.id = :id")
+@NamedQuery(name = "MedicalTraining.findAll", query = "SELECT mt FROM MedicalTraining mt")
+@NamedQuery(name = "MedicalTraining.findById", query = "SELECT mt FROM MedicalTraining mt WHERE mt.id = :param1")
 @AttributeOverride(name = "id", column = @Column(name = "training_id"))
 public class MedicalTraining extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	@JsonManagedReference
 	@ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name = "school_id")
 	private MedicalSchool school;
 
+	@JsonManagedReference
 	@OneToOne(mappedBy = "medicalTraining")
 	private MedicalCertificate certificate;
 
