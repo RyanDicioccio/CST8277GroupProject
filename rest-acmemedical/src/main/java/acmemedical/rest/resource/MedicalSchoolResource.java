@@ -101,7 +101,6 @@ public class MedicalSchoolResource {
     @Path("/{medicalSchoolId}/medicaltraining")
     public Response addMedicalTrainingToMedicalSchool(@PathParam("medicalSchoolId") int msId, MedicalTraining newMedicalTraining) {
         LOG.debug("Adding a new MedicalTraining to medical school with id = {}", msId);
-        
         MedicalSchool ms = service.getMedicalSchoolById(msId);
         newMedicalTraining.setMedicalSchool(ms);
         ms.getMedicalTrainings().add(newMedicalTraining);

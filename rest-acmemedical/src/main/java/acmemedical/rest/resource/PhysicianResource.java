@@ -125,9 +125,6 @@ public class PhysicianResource {
     @Path(RESOURCE_PATH_ID_PATH)
     public Response deletePhysicianById(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id) {
         Response response = null;
-        if (!sc.isCallerInRole(ADMIN_ROLE)) {
-            throw new ForbiddenException("User is not authorized to delete a physician");
-        }
         service.deletePhysicianById(id); 
         response = Response.status(Status.NO_CONTENT).build();        
         return response;
