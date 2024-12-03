@@ -176,6 +176,7 @@ public class ACMEMedicalService implements Serializable {
     	Patient patientToBeUpdated = getById(Patient.class, "Patient.findById", id);
         if (patientToBeUpdated != null) {
             em.refresh(patientToBeUpdated);
+            patientWithUpdates.setId(patientToBeUpdated.getId());
             em.merge(patientWithUpdates);
             em.flush();
         }
@@ -288,7 +289,7 @@ public class ACMEMedicalService implements Serializable {
     	MedicalSchool medicalSchoolToBeUpdated = getMedicalSchoolById(id);
         if (medicalSchoolToBeUpdated != null) {
             em.refresh(medicalSchoolToBeUpdated);
-            medicalSchoolToBeUpdated.setName(updatingMedicalSchool.getName());
+            updatingMedicalSchool.setId(medicalSchoolToBeUpdated.getId());
             em.merge(medicalSchoolToBeUpdated);
             em.flush();
         }
@@ -312,6 +313,7 @@ public class ACMEMedicalService implements Serializable {
     	MedicalTraining medicalTrainingToBeUpdated = getMedicalTrainingById(id);
         if (medicalTrainingToBeUpdated != null) {
             em.refresh(medicalTrainingToBeUpdated);
+            medicalTrainingWithUpdates.setId(medicalTrainingToBeUpdated.getId());
             em.merge(medicalTrainingWithUpdates);
             em.flush();
         }
