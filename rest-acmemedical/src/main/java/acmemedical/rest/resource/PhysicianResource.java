@@ -26,6 +26,7 @@ import jakarta.ejb.EJB;
 import jakarta.inject.Inject;
 import jakarta.security.enterprise.SecurityContext;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -119,4 +120,16 @@ public class PhysicianResource {
         return response;
     }
     
+    @DELETE
+    @RolesAllowed({ADMIN_ROLE})
+    @Path(RESOURCE_PATH_ID_PATH)
+    public Response deletePhysicianById(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id) {
+        Response response = null;
+        if (!sc.isCallerInRole(ADMIN_ROLE)) {
+            throw new ForbiddenException("User is not authorized to delete a physician");
+        }
+        service.deletePhysicianById(id); 
+        response = Response.status(Status.NO_CONTENT).build();        
+        return response;
+    } 
 }

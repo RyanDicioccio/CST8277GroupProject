@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
@@ -41,15 +42,15 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "medical_school")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE) 
-@DiscriminatorColumn(name = "public", discriminatorType = DiscriminatorType.STRING)
-@JsonTypeInfo(include = JsonTypeInfo.As.PROPERTY, use = JsonTypeInfo.Id.NAME, property = "type")
+@DiscriminatorColumn(name = "public", discriminatorType = DiscriminatorType.INTEGER)
+@JsonTypeInfo(include = JsonTypeInfo.As.PROPERTY, use = JsonTypeInfo.Id.NAME, property = "entity-type")
 @JsonSubTypes({
-    @JsonSubTypes.Type(value = PublicSchool.class, name = "PublicSchool"),
-    @JsonSubTypes.Type(value = PrivateSchool.class, name = "PrivateSchool")
+    @JsonSubTypes.Type(value = PublicSchool.class, name = "public_school"),
+    @JsonSubTypes.Type(value = PrivateSchool.class, name = "private_school")
 })
 @NamedQueries({
-    @NamedQuery(name = "MedicalSchool.isDuplicate", query = "SELECT COUNT(ms) FROM MedicalSchool ms WHERE ms.name = :name"),
-    @NamedQuery(name = "MedicalSchool.findById", query = "SELECT ms FROM MedicalSchool ms WHERE ms.id = :id")
+    @NamedQuery(name = "MedicalSchool.isDuplicate", query = "SELECT COUNT(ms) FROM MedicalSchool ms WHERE ms.name = :param1"),
+    @NamedQuery(name = "MedicalSchool.findById", query = "SELECT ms FROM MedicalSchool ms LEFT JOIN FETCH ms.medicalTrainings WHERE ms.id = :param1")
 })
 @AttributeOverride(name = "id", column = @Column(name = "school_id"))
 public abstract class MedicalSchool extends PojoBase implements Serializable {
@@ -64,6 +65,7 @@ public abstract class MedicalSchool extends PojoBase implements Serializable {
 	@OneToMany(mappedBy = "school", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<MedicalTraining> medicalTrainings = new HashSet<>();
 
+	@JsonProperty("entity-type")
 	@Basic(optional = false)
 	@Column(name = "public", nullable = false, insertable = false, updatable = false)
 	private boolean isPublic;

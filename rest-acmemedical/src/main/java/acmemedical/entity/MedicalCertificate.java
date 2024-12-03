@@ -13,6 +13,8 @@ package acmemedical.entity;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
+
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -82,6 +84,7 @@ public class MedicalCertificate extends PojoBase implements Serializable {
 		this.signed = signed;
 	}
 
+	@JsonSetter("signed")
 	public void setSigned(boolean signed) {
 		this.signed = (byte) (signed ? 0b0001 : 0b0000);
 	}
