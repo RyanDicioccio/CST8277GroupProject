@@ -11,6 +11,7 @@
 package acmemedical.rest.resource;
 
 import static acmemedical.utility.MyConstants.ADMIN_ROLE;
+import static acmemedical.utility.MyConstants.USER_ROLE;
 import static acmemedical.utility.MyConstants.MEDICAL_CERTIFICATE_RESOURCE_NAME;
 import static acmemedical.utility.MyConstants.RESOURCE_PATH_ID_ELEMENT;
 import static acmemedical.utility.MyConstants.RESOURCE_PATH_ID_PATH;
@@ -60,17 +61,29 @@ public class MedicalCertificateResource {
     }
 
     @GET
-    @RolesAllowed({ADMIN_ROLE})
+    @RolesAllowed({ADMIN_ROLE, USER_ROLE})
     @Path(RESOURCE_PATH_ID_PATH)
     public Response getMedicalCertificateById(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id) {
         LOG.debug("Trying to retrieve specific medical certificate with ID " + id);
         Response response = null;
         MedicalCertificate certificate = null;
+        String username = sc.getCallerPrincipal().getName();
 
         if (sc.isCallerInRole(ADMIN_ROLE)) {
             certificate = service.getById(MedicalCertificate.class, "MedicalCertificate.findById", id);
             response = Response.status(certificate == null ? Status.NOT_FOUND : Status.OK).entity(certificate).build();
-        } else {
+        } else if (sc.isCallerInRole("USER_ROLE")) {
+            certificate = service.getById(MedicalCertificate.class, "MedicalCertificate.findById", id);
+
+            if (certificate == null) {
+                response = Response.status(Status.NOT_FOUND).build();
+             // Ensure the certificate belongs to the current user
+            } else if (!certificate.getOwner().getFirstName().equals(username)) {
+                response = Response.status(Status.FORBIDDEN).build();
+            } else {
+                response = Response.status(Status.OK).entity(certificate).build(); 
+            }
+        }else {
             response = Response.status(Status.BAD_REQUEST).build();
         }
         return response;

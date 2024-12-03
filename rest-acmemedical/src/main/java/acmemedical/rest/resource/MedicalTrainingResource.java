@@ -12,6 +12,7 @@
 package acmemedical.rest.resource;
 
 import static acmemedical.utility.MyConstants.ADMIN_ROLE;
+import static acmemedical.utility.MyConstants.USER_ROLE;
 import static acmemedical.utility.MyConstants.MEDICAL_TRAINING_RESOURCE_NAME;
 import static acmemedical.utility.MyConstants.RESOURCE_PATH_ID_ELEMENT;
 import static acmemedical.utility.MyConstants.RESOURCE_PATH_ID_PATH;
@@ -51,7 +52,7 @@ public class MedicalTrainingResource {
     protected SecurityContext sc;
 
     @GET
-    @RolesAllowed({ADMIN_ROLE})
+    @RolesAllowed({ADMIN_ROLE, USER_ROLE})
     public Response getMedicalTrainings() {
         LOG.debug("Retrieving all medical trainings...");
         List<MedicalTraining> trainings = service.getAll(MedicalTraining.class, "MedicalTraining.findAll");
@@ -60,7 +61,7 @@ public class MedicalTrainingResource {
     }
 
     @GET
-    @RolesAllowed({ADMIN_ROLE})
+    @RolesAllowed({ADMIN_ROLE, USER_ROLE})
     @Path(RESOURCE_PATH_ID_PATH)
     public Response getMedicalTrainingById(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id) {
         LOG.debug("Trying to retrieve specific medical training with ID " + id);

@@ -1,6 +1,7 @@
 /********************************************************************************************************
  * File:  HttpErrorResponse.java
  * Course Materials CST 8277
+ * Last Updated 2024-12-02
  *
  * @author Teddy Yap
  * @author (original) Mike Norman

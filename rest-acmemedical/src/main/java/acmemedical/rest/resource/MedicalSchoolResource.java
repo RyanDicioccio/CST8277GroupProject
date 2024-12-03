@@ -1,5 +1,6 @@
 /********************************************************************************************************
  * File:  MedicalSchoolResource.java Course Materials CST 8277
+ * Last Updated 2024-12-02
  *
  * @author Teddy Yap
  * @author Shariar (Shawn) Emami
@@ -53,6 +54,7 @@ public class MedicalSchoolResource {
     protected SecurityContext sc;
     
     @GET
+    @RolesAllowed({ADMIN_ROLE, USER_ROLE})
     public Response getMedicalSchools() {
         LOG.debug("Retrieving all medical schools...");
         List<MedicalSchool> medicalSchools = service.getAllMedicalSchools();

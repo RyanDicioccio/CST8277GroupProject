@@ -1,5 +1,6 @@
 /********************************************************************************************************
  * File:  PhysicianResource.java Course Materials CST 8277
+ * Last Updated 2024-12-02
  *
  * @author Teddy Yap
  * @author Shariar (Shawn) Emami
@@ -61,7 +62,7 @@ public class PhysicianResource {
     protected SecurityContext sc;
 
     @GET
-    @RolesAllowed({ADMIN_ROLE, USER_ROLE})
+    @RolesAllowed({ADMIN_ROLE})
     public Response getPhysicians() {
         LOG.debug("retrieving all physicians ...");
         List<Physician> physicians = service.getAllPhysicians();
