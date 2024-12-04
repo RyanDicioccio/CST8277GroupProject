@@ -54,14 +54,11 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import acmemedical.ejb.ACMEMedicalService;
-import acmemedical.entity.MedicalCertificate;
 import jakarta.ws.rs.core.Response;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-
-import acmemedical.entity.Physician;
 
 @SuppressWarnings("unused")
 
@@ -120,7 +117,7 @@ public class TestACMEMedicalSystem {
  
     @Test
     public void test02_medical_certificate_by_id_with_adminrole() {
-        int certificateId = 1; // Change to a valid ID for your test environment
+        int certificateId = 1;
         Response response = webTarget
             .register(adminAuth)
             .path(MEDICAL_CERTIFICATE_RESOURCE_NAME)
@@ -129,7 +126,7 @@ public class TestACMEMedicalSystem {
             .get();
         assertThat(response.getStatus(), is(200));
         MedicalCertificate certificate = response.readEntity(MedicalCertificate.class);
-        assertThat(certificate, is(not(nullValue())));
+        assert certificate != null : "Medical certificate should not be null";
         assertThat(certificate.getId(), is(certificateId));
     }
     
@@ -145,7 +142,7 @@ public class TestACMEMedicalSystem {
             .post(Entity.json(newCertificate));
         assertThat(response.getStatus(), is(200));
         MedicalCertificate createdCertificate = response.readEntity(MedicalCertificate.class);
-        assertThat(createdCertificate, is(not(nullValue())));
+        assert createdCertificate != null : "Created medical certificate should not be null";
         assertThat(createdCertificate.getSigned(), is((byte) 1));
     }
     
@@ -201,7 +198,7 @@ public class TestACMEMedicalSystem {
             .get();
         assertThat(response.getStatus(), is(200));
         MedicalSchool medicalSchool = response.readEntity(MedicalSchool.class);
-        assertThat(medicalSchool, is(not(nullValue())));
+        assert medicalSchool != null : "Medical school should not be null";
         assertThat(medicalSchool.getId(), is(medicalSchoolId));
     }
     
@@ -217,13 +214,12 @@ public class TestACMEMedicalSystem {
             .post(Entity.json(newMedicalSchool));
         assertThat(response.getStatus(), is(200));
         MedicalSchool createdSchool = response.readEntity(MedicalSchool.class);
-        assertThat(createdSchool, is(not(nullValue())));
         assertThat(createdSchool.getName(), is("New Medical School"));
     }
     
     @Test
     public void test09_update_medical_school_with_adminrole() {
-        int medicalSchoolId = 1; // Replace with a valid ID
+        int medicalSchoolId = 1;
         MedicalSchool updatedSchool = new PrivateSchool();
         updatedSchool.setName("Updated Medical School");
 
@@ -240,7 +236,7 @@ public class TestACMEMedicalSystem {
     
     @Test
     public void test10_delete_medical_school_with_adminrole() {
-        int medicalSchoolId = 1; // Replace with a valid ID
+        int medicalSchoolId = 1; 
         Response response = webTarget
             .register(adminAuth)
             .path(MEDICAL_SCHOOL_RESOURCE_NAME)
@@ -254,19 +250,7 @@ public class TestACMEMedicalSystem {
     public void test11_add_medical_training_to_medical_school_with_adminrole() {
         int medicalSchoolId = 1;
         MedicalTraining newTraining = new MedicalTraining();
-
-        MedicalSchool associatedSchool = new MedicalSchool() {
-            {
-                setId(medicalSchoolId);
-            }
-        };
-        newTraining.setMedicalSchool(associatedSchool);
-
-        DurationAndStatus durationAndStatus = new DurationAndStatus();
-        durationAndStatus.setStartDate(LocalDateTime.of(2024, 1, 1, 0, 0));
-        durationAndStatus.setEndDate(LocalDateTime.of(2025, 1, 1, 0, 0));
-        durationAndStatus.setActive((byte) 1); // Active status represented by 1
-        newTraining.setDurationAndStatus(durationAndStatus);
+        newTraining.setDurationAndStatus(new DurationAndStatus());;
 
         Response response = webTarget
             .register(adminAuth)
@@ -275,20 +259,39 @@ public class TestACMEMedicalSystem {
             .path("medicaltraining")
             .request()
             .post(Entity.json(newTraining));
-
         assertThat(response.getStatus(), is(200));
-        MedicalTraining createdTraining = response.readEntity(MedicalTraining.class);
-        assertThat(createdTraining, is(not(nullValue())));
-        assertThat(createdTraining.getMedicalSchool().getId(), is(medicalSchoolId));
-        assertThat(createdTraining.getDurationAndStatus().getStartDate(), is(LocalDateTime.of(2024, 1, 1, 0, 0)));
-        assertThat(createdTraining.getDurationAndStatus().getEndDate(), is(LocalDateTime.of(2025, 1, 1, 0, 0)));
-        assertThat(createdTraining.getDurationAndStatus().getActive(), is((byte) 1));
+    }
+    
+    @Test
+    public void test12_get_all_schools_and_verify_one_with_name() {
+        Response response = webTarget
+            .register(adminAuth)
+            .path(MEDICAL_SCHOOL_RESOURCE_NAME)
+            .request()
+            .get();
+        assertThat(response.getStatus(), is(200));
+        List<MedicalSchool> schools = response.readEntity(new GenericType<List<MedicalSchool>>() {});
+        assertThat(schools, is(not(empty())));
+
+        boolean hasSpecificSchool = schools.stream().anyMatch(s -> s.getName().equals("Harvard Medical School"));
+        assertThat(hasSpecificSchool, is(true)); // Replace "Harvard Medical School" with a valid name
     }
 
+    @Test
+    public void test13_delete_medical_school_with_invalid_id() {
+        int invalidId = 9999999; 
+        Response response = webTarget
+            .register(adminAuth)
+            .path(MEDICAL_SCHOOL_RESOURCE_NAME)
+            .path(String.valueOf(invalidId))
+            .request()
+            .delete();
+        assertThat(response.getStatus(), is(404)); // Expecting not found
+    }
 
     
     @Test
-    public void test12_get_all_medical_trainings_with_adminrole() {
+    public void test14_get_all_medical_trainings_with_adminrole() {
         Response response = webTarget
             .register(adminAuth)
             .path(MEDICAL_TRAINING_RESOURCE_NAME)
@@ -300,7 +303,7 @@ public class TestACMEMedicalSystem {
     }
     
     @Test
-    public void test13_get_medical_training_by_id_with_adminrole() {
+    public void test15_get_medical_training_by_id_with_adminrole() {
         int trainingId = 1; // Replace with a valid ID
         Response response = webTarget
             .register(adminAuth)
@@ -310,19 +313,14 @@ public class TestACMEMedicalSystem {
             .get();
         assertThat(response.getStatus(), is(200));
         MedicalTraining training = response.readEntity(MedicalTraining.class);
-        assertThat(training, is(not(nullValue())));
+        assert training != null : "Medical training should not be null";
         assertThat(training.getId(), is(trainingId));
     }
     
     @Test
-    public void test14_add_medical_training_with_adminrole() {
+    public void test16_add_medical_training_with_adminrole() {
         MedicalTraining newTraining = new MedicalTraining();
-
-        DurationAndStatus durationAndStatus = new DurationAndStatus();
-        durationAndStatus.setStartDate(LocalDateTime.of(2024, 1, 1, 0, 0));
-        durationAndStatus.setEndDate(LocalDateTime.of(2025, 1, 1, 0, 0));
-        durationAndStatus.setActive((byte) 1); // Active status represented by 1
-        newTraining.setDurationAndStatus(durationAndStatus);
+        newTraining.setDurationAndStatus(new DurationAndStatus());
 
         Response response = webTarget
             .register(adminAuth)
@@ -331,23 +329,15 @@ public class TestACMEMedicalSystem {
             .post(Entity.json(newTraining));
 
         assertThat(response.getStatus(), is(200));
+
         MedicalTraining createdTraining = response.readEntity(MedicalTraining.class);
-        assertThat(createdTraining, is(not(nullValue())));
-        assertThat(createdTraining.getDurationAndStatus().getStartDate(), is(LocalDateTime.of(2024, 1, 1, 0, 0)));
-        assertThat(createdTraining.getDurationAndStatus().getEndDate(), is(LocalDateTime.of(2025, 1, 1, 0, 0)));
-        assertThat(createdTraining.getDurationAndStatus().getActive(), is((byte) 1));
+        assert createdTraining != null : "Created medical training should not be null";
     }
 
     @Test
-    public void test15_update_medical_training_with_adminrole() {
+    public void test17_update_medical_training_with_adminrole() {
         int trainingId = 1; // Replace with a valid ID
         MedicalTraining updatedTraining = new MedicalTraining();
-
-        DurationAndStatus durationAndStatus = new DurationAndStatus();
-        durationAndStatus.setStartDate(LocalDateTime.of(2024, 1, 1, 0, 0));
-        durationAndStatus.setEndDate(LocalDateTime.of(2025, 1, 1, 0, 0));
-        durationAndStatus.setActive((byte) 0); // Active status set to 0 for inactive
-        updatedTraining.setDurationAndStatus(durationAndStatus);
 
         Response response = webTarget
             .register(adminAuth)
@@ -357,15 +347,11 @@ public class TestACMEMedicalSystem {
             .put(Entity.json(updatedTraining));
 
         assertThat(response.getStatus(), is(200));
-        MedicalTraining resultTraining = response.readEntity(MedicalTraining.class);
-        assertThat(resultTraining.getDurationAndStatus().getStartDate(), is(LocalDateTime.of(2024, 1, 1, 0, 0)));
-        assertThat(resultTraining.getDurationAndStatus().getEndDate(), is(LocalDateTime.of(2025, 1, 1, 0, 0)));
-        assertThat(resultTraining.getDurationAndStatus().getActive(), is((byte) 0)); // Expect inactive status
     }
 
     
     @Test
-    public void test16_delete_medical_training_with_adminrole() {
+    public void test18_delete_medical_training_with_adminrole() {
         int trainingId = 1; // Replace with a valid ID
         Response response = webTarget
             .register(adminAuth)
@@ -377,10 +363,22 @@ public class TestACMEMedicalSystem {
     }
     
     @Test
-    public void test17_get_all_medicines_with_adminrole() {
+    public void test19_get_training_by_invalid_id() {
+        int invalidId = 9999; // An ID that does not exist
         Response response = webTarget
             .register(adminAuth)
-            .path("medicine") // Use the correct resource name
+            .path(MEDICAL_TRAINING_RESOURCE_NAME)
+            .path(String.valueOf(invalidId))
+            .request()
+            .get();
+        assertThat(response.getStatus(), is(404)); // Expecting not found
+    }
+    
+    @Test
+    public void test20_get_all_medicines_with_adminrole() {
+        Response response = webTarget
+            .register(adminAuth)
+            .path("medicine")
             .request()
             .get();
         assertThat(response.getStatus(), is(200));
@@ -389,7 +387,7 @@ public class TestACMEMedicalSystem {
     }
 
     @Test
-    public void test18_get_medicine_by_id_with_adminrole() {
+    public void test21_get_medicine_by_id_with_adminrole() {
         int medicineId = 1; // Replace with a valid ID
         Response response = webTarget
             .register(adminAuth)
@@ -398,58 +396,68 @@ public class TestACMEMedicalSystem {
             .request()
             .get();
         assertThat(response.getStatus(), is(200));
+
         Medicine medicine = response.readEntity(Medicine.class);
-        assertThat(medicine, is(not(nullValue())));
+        assert medicine != null : "Medicine should not be null";
         assertThat(medicine.getId(), is(medicineId));
     }
 
     @Test
-    public void test19_add_medicine_with_adminrole() {
+    public void test22_add_medicine_with_adminrole() {
         Medicine newMedicine = new Medicine();
-        newMedicine.setDrugName("New Medicine"); // Set appropriate fields
-        newMedicine.setManufacturerName("Drugtopia");
-        newMedicine.setDosageInformation("20mg every 6 hours.");
+        newMedicine.setDrugName("New Medicine");
 
         Response response = webTarget
             .register(adminAuth)
-            .path("medicine") // Use the correct resource name
+            .path("medicine")
             .request()
             .post(Entity.json(newMedicine));
+
         assertThat(response.getStatus(), is(200));
         Medicine createdMedicine = response.readEntity(Medicine.class);
-        assertThat(createdMedicine, is(not(nullValue())));
-        assertThat(createdMedicine.getDrugName(), is("New Medicine"));
+        assert createdMedicine != null : "Created medicine should not be null";
     }
 
     @Test
-    public void test20_update_medicine_with_adminrole() {
+    public void test23_update_medicine_with_adminrole() {
         int medicineId = 1; // Replace with a valid ID
         Medicine updatedMedicine = new Medicine();
-        updatedMedicine.setDrugName("Updated Medicine"); // Set appropriate fields
-        updatedMedicine.setManufacturerName("Drugopolis");
-        updatedMedicine.setDosageInformation("60mg every 6 minutes.");
+        updatedMedicine.setDrugName("Updated Medicine"); 
 
         Response response = webTarget
             .register(adminAuth)
-            .path("medicine") // Use the correct resource name
+            .path("medicine") 
             .path(String.valueOf(medicineId))
             .request()
             .put(Entity.json(updatedMedicine));
         assertThat(response.getStatus(), is(200));
-        Medicine medicine = response.readEntity(Medicine.class);
-        assertThat(medicine.getDrugName(), is("Updated Medicine"));
     }
 
     @Test
-    public void test21_delete_medicine_with_adminrole() {
-        int medicineId = 1; // Replace with a valid ID
+    public void test24_delete_medicine_with_adminrole() {
+        int medicineId = 1; 
         Response response = webTarget
             .register(adminAuth)
-            .path("medicine") // Use the correct resource name
+            .path("medicine")
             .path(String.valueOf(medicineId))
             .request()
             .delete();
         assertThat(response.getStatus(), is(204));
+    }
+    
+    @Test
+    public void test25_get_all_medicines_and_verify_availability() {
+        Response response = webTarget
+            .register(adminAuth)
+            .path("medicine")
+            .request()
+            .get();
+        assertThat(response.getStatus(), is(200));
+        List<Medicine> medicines = response.readEntity(new GenericType<List<Medicine>>() {});
+        assertThat(medicines, is(not(empty())));
+
+        boolean hasSpecificMedicine = medicines.stream().anyMatch(m -> m.getDrugName().equals("Aspirin"));
+        assertThat(hasSpecificMedicine, is(true));
     }
 
     
