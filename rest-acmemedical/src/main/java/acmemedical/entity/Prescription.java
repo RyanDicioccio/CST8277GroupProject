@@ -51,19 +51,16 @@ public class Prescription extends PojoBaseCompositeKey<PrescriptionPK> implement
 	private PrescriptionPK id;
 
 	// @MapsId is used to map a part of composite key to an entity.
-	@JsonManagedReference
 	@MapsId("physicianId")
     @ManyToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "physician_id", referencedColumnName = "id", nullable = false)
 	private Physician physician;
 
-	@JsonManagedReference
 	@MapsId("patientId")
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "patient_id", referencedColumnName = "patient_id", nullable = false)
 	private Patient patient;
 
-	@JsonManagedReference
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "medicine_id", nullable = false)
 	private Medicine medicine;

@@ -61,7 +61,7 @@ public class Patient extends PojoBase implements Serializable {
 	@Column(name = "smoker")
 	private byte smoker;
 
-	@JsonBackReference
+	@JsonBackReference("patient")
 	@OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Prescription> prescriptions = new HashSet<>();
 
