@@ -23,13 +23,17 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.hamcrest.Matchers.nullValue;
+
 
 import java.lang.invoke.MethodHandles;
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.Response;
@@ -203,7 +207,7 @@ public class TestACMEMedicalSystem {
     
     @Test
     public void test08_add_medical_school_with_adminrole() {
-        MedicalSchool newMedicalSchool = new MedicalSchool();
+        MedicalSchool newMedicalSchool = new PrivateSchool();
         newMedicalSchool.setName("New Medical School");
 
         Response response = webTarget
@@ -220,7 +224,7 @@ public class TestACMEMedicalSystem {
     @Test
     public void test09_update_medical_school_with_adminrole() {
         int medicalSchoolId = 1; // Replace with a valid ID
-        MedicalSchool updatedSchool = new MedicalSchool();
+        MedicalSchool updatedSchool = new PrivateSchool();
         updatedSchool.setName("Updated Medical School");
 
         Response response = webTarget
@@ -248,9 +252,21 @@ public class TestACMEMedicalSystem {
     
     @Test
     public void test11_add_medical_training_to_medical_school_with_adminrole() {
-        int medicalSchoolId = 1; // Replace with a valid ID
+        int medicalSchoolId = 1;
         MedicalTraining newTraining = new MedicalTraining();
-        newTraining.setType("Residency");
+
+        MedicalSchool associatedSchool = new MedicalSchool() {
+            {
+                setId(medicalSchoolId);
+            }
+        };
+        newTraining.setMedicalSchool(associatedSchool);
+
+        DurationAndStatus durationAndStatus = new DurationAndStatus();
+        durationAndStatus.setStartDate(LocalDateTime.of(2024, 1, 1, 0, 0));
+        durationAndStatus.setEndDate(LocalDateTime.of(2025, 1, 1, 0, 0));
+        durationAndStatus.setActive((byte) 1); // Active status represented by 1
+        newTraining.setDurationAndStatus(durationAndStatus);
 
         Response response = webTarget
             .register(adminAuth)
@@ -259,8 +275,17 @@ public class TestACMEMedicalSystem {
             .path("medicaltraining")
             .request()
             .post(Entity.json(newTraining));
+
         assertThat(response.getStatus(), is(200));
+        MedicalTraining createdTraining = response.readEntity(MedicalTraining.class);
+        assertThat(createdTraining, is(not(nullValue())));
+        assertThat(createdTraining.getMedicalSchool().getId(), is(medicalSchoolId));
+        assertThat(createdTraining.getDurationAndStatus().getStartDate(), is(LocalDateTime.of(2024, 1, 1, 0, 0)));
+        assertThat(createdTraining.getDurationAndStatus().getEndDate(), is(LocalDateTime.of(2025, 1, 1, 0, 0)));
+        assertThat(createdTraining.getDurationAndStatus().getActive(), is((byte) 1));
     }
+
+
     
     @Test
     public void test12_get_all_medical_trainings_with_adminrole() {
@@ -292,24 +317,37 @@ public class TestACMEMedicalSystem {
     @Test
     public void test14_add_medical_training_with_adminrole() {
         MedicalTraining newTraining = new MedicalTraining();
-        newTraining.setType("Residency");
+
+        DurationAndStatus durationAndStatus = new DurationAndStatus();
+        durationAndStatus.setStartDate(LocalDateTime.of(2024, 1, 1, 0, 0));
+        durationAndStatus.setEndDate(LocalDateTime.of(2025, 1, 1, 0, 0));
+        durationAndStatus.setActive((byte) 1); // Active status represented by 1
+        newTraining.setDurationAndStatus(durationAndStatus);
 
         Response response = webTarget
             .register(adminAuth)
             .path(MEDICAL_TRAINING_RESOURCE_NAME)
             .request()
             .post(Entity.json(newTraining));
+
         assertThat(response.getStatus(), is(200));
         MedicalTraining createdTraining = response.readEntity(MedicalTraining.class);
         assertThat(createdTraining, is(not(nullValue())));
-        assertThat(createdTraining.getType(), is("Residency"));
+        assertThat(createdTraining.getDurationAndStatus().getStartDate(), is(LocalDateTime.of(2024, 1, 1, 0, 0)));
+        assertThat(createdTraining.getDurationAndStatus().getEndDate(), is(LocalDateTime.of(2025, 1, 1, 0, 0)));
+        assertThat(createdTraining.getDurationAndStatus().getActive(), is((byte) 1));
     }
-    
+
     @Test
     public void test15_update_medical_training_with_adminrole() {
         int trainingId = 1; // Replace with a valid ID
         MedicalTraining updatedTraining = new MedicalTraining();
-        updatedTraining.setType("Fellowship");
+
+        DurationAndStatus durationAndStatus = new DurationAndStatus();
+        durationAndStatus.setStartDate(LocalDateTime.of(2024, 1, 1, 0, 0));
+        durationAndStatus.setEndDate(LocalDateTime.of(2025, 1, 1, 0, 0));
+        durationAndStatus.setActive((byte) 0); // Active status set to 0 for inactive
+        updatedTraining.setDurationAndStatus(durationAndStatus);
 
         Response response = webTarget
             .register(adminAuth)
@@ -317,10 +355,14 @@ public class TestACMEMedicalSystem {
             .path(String.valueOf(trainingId))
             .request()
             .put(Entity.json(updatedTraining));
+
         assertThat(response.getStatus(), is(200));
         MedicalTraining resultTraining = response.readEntity(MedicalTraining.class);
-        assertThat(resultTraining.getType(), is("Fellowship"));
+        assertThat(resultTraining.getDurationAndStatus().getStartDate(), is(LocalDateTime.of(2024, 1, 1, 0, 0)));
+        assertThat(resultTraining.getDurationAndStatus().getEndDate(), is(LocalDateTime.of(2025, 1, 1, 0, 0)));
+        assertThat(resultTraining.getDurationAndStatus().getActive(), is((byte) 0)); // Expect inactive status
     }
+
     
     @Test
     public void test16_delete_medical_training_with_adminrole() {
@@ -365,7 +407,8 @@ public class TestACMEMedicalSystem {
     public void test19_add_medicine_with_adminrole() {
         Medicine newMedicine = new Medicine();
         newMedicine.setDrugName("New Medicine"); // Set appropriate fields
-        newMedicine.setDescription("Description of new medicine");
+        newMedicine.setManufacturerName("Drugtopia");
+        newMedicine.setDosageInformation("20mg every 6 hours.");
 
         Response response = webTarget
             .register(adminAuth)
@@ -375,7 +418,7 @@ public class TestACMEMedicalSystem {
         assertThat(response.getStatus(), is(200));
         Medicine createdMedicine = response.readEntity(Medicine.class);
         assertThat(createdMedicine, is(not(nullValue())));
-        assertThat(createdMedicine.getName(), is("New Medicine"));
+        assertThat(createdMedicine.getDrugName(), is("New Medicine"));
     }
 
     @Test
@@ -383,7 +426,8 @@ public class TestACMEMedicalSystem {
         int medicineId = 1; // Replace with a valid ID
         Medicine updatedMedicine = new Medicine();
         updatedMedicine.setDrugName("Updated Medicine"); // Set appropriate fields
-        updatedMedicine.setDescription("Updated description");
+        updatedMedicine.setManufacturerName("Drugopolis");
+        updatedMedicine.setDosageInformation("60mg every 6 minutes.");
 
         Response response = webTarget
             .register(adminAuth)
@@ -393,7 +437,7 @@ public class TestACMEMedicalSystem {
             .put(Entity.json(updatedMedicine));
         assertThat(response.getStatus(), is(200));
         Medicine medicine = response.readEntity(Medicine.class);
-        assertThat(medicine.getName(), is("Updated Medicine"));
+        assertThat(medicine.getDrugName(), is("Updated Medicine"));
     }
 
     @Test
