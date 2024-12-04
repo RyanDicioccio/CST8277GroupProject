@@ -263,7 +263,35 @@ public class TestACMEMedicalSystem {
     }
     
     @Test
-    public void test12_get_all_medical_trainings_with_adminrole() {
+    public void test12_get_all_schools_and_verify_one_with_name() {
+        Response response = webTarget
+            .register(adminAuth)
+            .path(MEDICAL_SCHOOL_RESOURCE_NAME)
+            .request()
+            .get();
+        assertThat(response.getStatus(), is(200));
+        List<MedicalSchool> schools = response.readEntity(new GenericType<List<MedicalSchool>>() {});
+        assertThat(schools, is(not(empty())));
+
+        boolean hasSpecificSchool = schools.stream().anyMatch(s -> s.getName().equals("Harvard Medical School"));
+        assertThat(hasSpecificSchool, is(true)); // Replace "Harvard Medical School" with a valid name
+    }
+
+    @Test
+    public void test13_delete_medical_school_with_invalid_id() {
+        int invalidId = 9999999; 
+        Response response = webTarget
+            .register(adminAuth)
+            .path(MEDICAL_SCHOOL_RESOURCE_NAME)
+            .path(String.valueOf(invalidId))
+            .request()
+            .delete();
+        assertThat(response.getStatus(), is(404)); // Expecting not found
+    }
+
+    
+    @Test
+    public void test14_get_all_medical_trainings_with_adminrole() {
         Response response = webTarget
             .register(adminAuth)
             .path(MEDICAL_TRAINING_RESOURCE_NAME)
@@ -275,7 +303,7 @@ public class TestACMEMedicalSystem {
     }
     
     @Test
-    public void test13_get_medical_training_by_id_with_adminrole() {
+    public void test15_get_medical_training_by_id_with_adminrole() {
         int trainingId = 1; // Replace with a valid ID
         Response response = webTarget
             .register(adminAuth)
@@ -290,7 +318,7 @@ public class TestACMEMedicalSystem {
     }
     
     @Test
-    public void test14_add_medical_training_with_adminrole() {
+    public void test16_add_medical_training_with_adminrole() {
         MedicalTraining newTraining = new MedicalTraining();
         newTraining.setType("Residency");
 
@@ -306,7 +334,7 @@ public class TestACMEMedicalSystem {
     }
     
     @Test
-    public void test15_update_medical_training_with_adminrole() {
+    public void test17_update_medical_training_with_adminrole() {
         int trainingId = 1; // Replace with a valid ID
         MedicalTraining updatedTraining = new MedicalTraining();
         updatedTraining.setType("Fellowship");
@@ -323,7 +351,7 @@ public class TestACMEMedicalSystem {
     }
     
     @Test
-    public void test16_delete_medical_training_with_adminrole() {
+    public void test18_delete_medical_training_with_adminrole() {
         int trainingId = 1; // Replace with a valid ID
         Response response = webTarget
             .register(adminAuth)
@@ -335,7 +363,19 @@ public class TestACMEMedicalSystem {
     }
     
     @Test
-    public void test17_get_all_medicines_with_adminrole() {
+    public void test19_get_training_by_invalid_id() {
+        int invalidId = 9999; // An ID that does not exist
+        Response response = webTarget
+            .register(adminAuth)
+            .path(MEDICAL_TRAINING_RESOURCE_NAME)
+            .path(String.valueOf(invalidId))
+            .request()
+            .get();
+        assertThat(response.getStatus(), is(404)); // Expecting not found
+    }
+    
+    @Test
+    public void test20_get_all_medicines_with_adminrole() {
         Response response = webTarget
             .register(adminAuth)
             .path("medicine") // Use the correct resource name
@@ -347,7 +387,7 @@ public class TestACMEMedicalSystem {
     }
 
     @Test
-    public void test18_get_medicine_by_id_with_adminrole() {
+    public void test21_get_medicine_by_id_with_adminrole() {
         int medicineId = 1; // Replace with a valid ID
         Response response = webTarget
             .register(adminAuth)
@@ -362,7 +402,7 @@ public class TestACMEMedicalSystem {
     }
 
     @Test
-    public void test19_add_medicine_with_adminrole() {
+    public void test22_add_medicine_with_adminrole() {
         Medicine newMedicine = new Medicine();
         newMedicine.setDrugName("New Medicine"); // Set appropriate fields
         newMedicine.setDescription("Description of new medicine");
@@ -379,7 +419,7 @@ public class TestACMEMedicalSystem {
     }
 
     @Test
-    public void test20_update_medicine_with_adminrole() {
+    public void test23_update_medicine_with_adminrole() {
         int medicineId = 1; // Replace with a valid ID
         Medicine updatedMedicine = new Medicine();
         updatedMedicine.setDrugName("Updated Medicine"); // Set appropriate fields
@@ -397,7 +437,7 @@ public class TestACMEMedicalSystem {
     }
 
     @Test
-    public void test21_delete_medicine_with_adminrole() {
+    public void test24_delete_medicine_with_adminrole() {
         int medicineId = 1; // Replace with a valid ID
         Response response = webTarget
             .register(adminAuth)
@@ -406,6 +446,21 @@ public class TestACMEMedicalSystem {
             .request()
             .delete();
         assertThat(response.getStatus(), is(204));
+    }
+    
+    @Test
+    public void test25_get_all_medicines_and_verify_availability() {
+        Response response = webTarget
+            .register(adminAuth)
+            .path("medicine") // Use the correct resource name
+            .request()
+            .get();
+        assertThat(response.getStatus(), is(200));
+        List<Medicine> medicines = response.readEntity(new GenericType<List<Medicine>>() {});
+        assertThat(medicines, is(not(empty())));
+
+        boolean hasSpecificMedicine = medicines.stream().anyMatch(m -> m.getName().equals("Aspirin"));
+        assertThat(hasSpecificMedicine, is(true)); // Replace "Aspirin" with a valid medicine name
     }
 
     
