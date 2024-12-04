@@ -74,6 +74,8 @@ public class TestACMEMedicalSystem {
     static final String MEDICAL_CERTIFICATE_RESOURCE_NAME = "medical_certificate";
     static final String MEDICAL_SCHOOL_RESOURCE_NAME = "medical_school";
     static final String MEDICAL_TRAINING_RESOURCE_NAME = "medical_training";
+    static final String PATIENT_RESOURCE_NAME = "patient";
+
 
     // Test fixture(s)
     static URI uri;
@@ -459,6 +461,214 @@ public class TestACMEMedicalSystem {
         boolean hasSpecificMedicine = medicines.stream().anyMatch(m -> m.getDrugName().equals("Aspirin"));
         assertThat(hasSpecificMedicine, is(true));
     }
-
     
+    @Test
+    public void test26_all_patients_with_adminrole() {
+        Response response = webTarget
+            .register(adminAuth)
+            .path(PATIENT_RESOURCE_NAME)
+            .request()
+            .get();
+        assertThat(response.getStatus(), is(200));
+        List<Patient> patients = response.readEntity(new GenericType<List<Patient>>() {});
+        assertThat(patients, is(not(empty())));
+    }
+
+    @Test
+    public void test27_patient_by_id_with_adminrole() {
+        int patientId = 1;
+        Response response = webTarget
+            .register(adminAuth)
+            .path(PATIENT_RESOURCE_NAME)
+            .path(String.valueOf(patientId))
+            .request()
+            .get();
+        assertThat(response.getStatus(), is(200));
+        Patient patient = response.readEntity(Patient.class);
+        assertThat(patient, is(not(nullValue())));
+        assertThat(patient.getId(), is(patientId));
+    }
+
+    @Test
+    public void test28_add_patient_with_adminrole() {
+        Patient newPatient = new Patient();
+        newPatient.setFirstName("John");
+        newPatient.setLastName("Doe");
+        newPatient.setYear(1994);
+        newPatient.setAddress("123 Elm Street");
+        newPatient.setHeight(180);
+        newPatient.setWeight(75);
+        newPatient.setSmoker((byte) 0);
+
+        Response response = webTarget
+            .register(adminAuth)
+            .path(PATIENT_RESOURCE_NAME)
+            .request()
+            .post(Entity.json(newPatient));
+        
+        assertThat(response.getStatus(), is(200));
+        Patient createdPatient = response.readEntity(Patient.class);
+        assertThat(createdPatient, is(not(nullValue())));
+        assertThat(createdPatient.getFirstName(), is("John"));
+        assertThat(createdPatient.getLastName(), is("Doe"));
+    }
+
+    @Test
+    public void test29_update_patient_with_adminrole() {
+        int patientId = 1;
+        Patient updatedPatient = new Patient();
+        updatedPatient.setFirstName("Jane");
+        updatedPatient.setLastName("Doe");
+        updatedPatient.setYear(1996);
+        updatedPatient.setAddress("1234 Elm Street");
+        updatedPatient.setHeight(165);
+        updatedPatient.setWeight(60);
+        updatedPatient.setSmoker((byte) 0);
+
+        Response response = webTarget
+            .register(adminAuth)
+            .path(PATIENT_RESOURCE_NAME)
+            .path(String.valueOf(patientId))
+            .request()
+            .put(Entity.json(updatedPatient));
+
+        assertThat(response.getStatus(), is(200));
+
+        Patient patient = response.readEntity(Patient.class);
+
+        assertThat(patient.getFirstName(), is("Jane"));
+        assertThat(patient.getLastName(), is("Doe"));
+        assertThat(patient.getYear(), is(1996));
+        assertThat(patient.getAddress(), is("1234 Elm Street"));
+        assertThat(patient.getHeight(), is(165));
+        assertThat(patient.getWeight(), is(60));
+        assertThat(patient.getSmoker(), is((byte) 0));
+
+        assertThat(patient.getId(), is(patientId));
+    }
+
+    @Test
+    public void test30_delete_patient_with_adminrole() {
+        int patientId = 1;
+        Response response = webTarget
+            .register(adminAuth)
+            .path(PATIENT_RESOURCE_NAME)
+            .path(String.valueOf(patientId))
+            .request()
+            .delete();
+        assertThat(response.getStatus(), is(204));
+    }
+    
+    @Test
+    public void test31_get_physicians_with_adminrole() {
+        Response response = webTarget
+            .register(adminAuth)
+            .path(PHYSICIAN_RESOURCE_NAME)
+            .request()
+            .get();
+
+        assertThat(response.getStatus(), is(200));
+        List<Physician> physicians = response.readEntity(new GenericType<List<Physician>>() {});
+        assertThat(physicians, is(not(empty())));
+    }
+
+    @Test
+    public void test32_get_physician_by_id_with_adminrole() {
+        int physicianId = 1;
+        Response response = webTarget
+            .register(adminAuth)
+            .path(PHYSICIAN_RESOURCE_NAME)
+            .path(String.valueOf(physicianId))
+            .request()
+            .get();
+
+        assertThat(response.getStatus(), is(200));
+        Physician physician = response.readEntity(Physician.class);
+        assertThat(physician.getId(), is(physicianId));
+    }
+
+    @Test
+    public void test33_get_physician_by_id_with_userrole_own_physician() {
+        int physicianId = 1;
+        Response response = webTarget
+            .register(userAuth)
+            .path(PHYSICIAN_RESOURCE_NAME)
+            .path(String.valueOf(physicianId))
+            .request()
+            .get();
+
+        assertThat(response.getStatus(), is(200));
+        Physician physician = response.readEntity(Physician.class);
+        assertThat(physician.getId(), is(physicianId));
+    }
+
+    @Test
+    public void test34_get_physician_by_id_with_userrole_other_physician() {
+        int physicianId = 2;
+        Response response = webTarget
+            .register(userAuth)
+            .path(PHYSICIAN_RESOURCE_NAME)
+            .path(String.valueOf(physicianId))
+            .request()
+            .get();
+
+        assertThat(response.getStatus(), is(403));
+    }
+
+    @Test
+    public void test35_delete_physician_with_adminrole() {
+        int physicianId = 1;
+        Response response = webTarget
+            .register(adminAuth)
+            .path(PHYSICIAN_RESOURCE_NAME)
+            .path(String.valueOf(physicianId))
+            .request()
+            .delete();
+
+        assertThat(response.getStatus(), is(204));
+    }
+    
+    @Test
+    public void test36_create_physician_with_adminrole() {
+        Physician newPhysician = new Physician();
+        newPhysician.setFirstName("Dr. Sarah");
+        newPhysician.setLastName("Lee");
+
+        Response response = webTarget
+            .register(adminAuth)
+            .path(PHYSICIAN_RESOURCE_NAME)
+            .request()
+            .post(Entity.json(newPhysician));
+
+        assertThat(response.getStatus(), is(200));
+        Physician createdPhysician = response.readEntity(Physician.class);
+        assertThat(createdPhysician, is(not(nullValue())));
+        assertThat(createdPhysician.getFirstName(), is("Dr. Sarah"));
+        assertThat(createdPhysician.getLastName(), is("Lee"));
+    }
+
+    @Test
+    public void test37_update_physician_with_adminrole() {
+        int physicianId = 1; // Replace with a valid physician ID for your test
+        Physician updatedPhysician = new Physician();
+        updatedPhysician.setFirstName("Dr. Michael");
+        updatedPhysician.setLastName("Taylor");
+
+        Response response = webTarget
+            .register(adminAuth)
+            .path(PHYSICIAN_RESOURCE_NAME)
+            .path(String.valueOf(physicianId))
+            .request()
+            .put(Entity.json(updatedPhysician));
+
+        assertThat(response.getStatus(), is(200));
+
+        Physician physician = response.readEntity(Physician.class);
+
+        assertThat(physician.getFirstName(), is("Dr. Michael"));
+        assertThat(physician.getLastName(), is("Taylor"));
+
+        assertThat(physician.getId(), is(physicianId));
+    }
+
 }
