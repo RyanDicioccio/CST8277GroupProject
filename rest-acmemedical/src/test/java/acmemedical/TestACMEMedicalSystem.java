@@ -25,6 +25,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.containsString;
 
 
 import java.lang.invoke.MethodHandles;
@@ -332,7 +333,19 @@ public class TestACMEMedicalSystem {
     }
     
     @Test
-    public void test19_get_training_by_invalid_id() {
+    public void test19_delete_non_existent_medical_training_with_adminrole() {
+        int trainingId = 144364365;
+        Response response = webTarget
+            .register(adminAuth)
+            .path(MEDICAL_TRAINING_RESOURCE_NAME)
+            .path(String.valueOf(trainingId))
+            .request()
+            .delete();
+        assertThat(response.getStatus(), is(404)); 
+    }
+    
+    @Test
+    public void test20_get_training_by_invalid_id() {
         int invalidId = 9999;
         Response response = webTarget
             .register(adminAuth)
@@ -344,7 +357,7 @@ public class TestACMEMedicalSystem {
     }
     
     @Test
-    public void test20_get_all_medicines_with_adminrole() {
+    public void test21_get_all_medicines_with_adminrole() {
         Response response = webTarget
             .register(adminAuth)
             .path("medicine")
@@ -354,7 +367,7 @@ public class TestACMEMedicalSystem {
     }
 
     @Test
-    public void test21_get_medicine_by_id_with_adminrole() {
+    public void test22_get_medicine_by_id_with_adminrole() {
         int medicineId = 1;
         Response response = webTarget
             .register(adminAuth)
@@ -366,7 +379,7 @@ public class TestACMEMedicalSystem {
     }
 
     @Test
-    public void test22_add_medicine_with_adminrole() {
+    public void test23_add_medicine_with_adminrole() {
         Medicine newMedicine = new Medicine();
         newMedicine.setDrugName("New Medicine");
 
@@ -380,7 +393,7 @@ public class TestACMEMedicalSystem {
     }
 
     @Test
-    public void test23_update_medicine_with_adminrole() {
+    public void test24_update_medicine_with_adminrole() {
         int medicineId = 1;
         Medicine updatedMedicine = new Medicine();
         updatedMedicine.setDrugName("Updated Medicine"); 
@@ -393,9 +406,24 @@ public class TestACMEMedicalSystem {
             .put(Entity.json(updatedMedicine));
         assertThat(response.getStatus(), is(200));
     }
+    
+    @Test
+    public void test25_update_non_existent_medicine_with_adminrole() {
+        int medicineId = 23456341;
+        Medicine updatedMedicine = new Medicine();
+        updatedMedicine.setDrugName("Updated Medicine"); 
+
+        Response response = webTarget
+            .register(adminAuth)
+            .path(MEDICINE_RESOURCE_NAME) 
+            .path(String.valueOf(medicineId))
+            .request()
+            .put(Entity.json(updatedMedicine));
+        assertThat(response.getStatus(), is(404));
+    }
 
     @Test
-    public void test24_delete_medicine_with_adminrole() {
+    public void test26_delete_medicine_with_adminrole() {
         int medicineId = 1; 
         Response response = webTarget
             .register(adminAuth)
@@ -407,7 +435,19 @@ public class TestACMEMedicalSystem {
     }
     
     @Test
-    public void test25_get_all_medicines_and_verify_availability() {
+    public void test27_delete_non_existent_medicine_with_adminrole() {
+        int medicineId = 14563456; 
+        Response response = webTarget
+            .register(adminAuth)
+            .path(MEDICINE_RESOURCE_NAME)
+            .path(String.valueOf(medicineId))
+            .request()
+            .delete();
+        assertThat(response.getStatus(), is(404));
+    }
+    
+    @Test
+    public void test28_get_all_medicines_and_verify_availability() {
         Response response = webTarget
             .register(adminAuth)
             .path(MEDICINE_RESOURCE_NAME)
@@ -422,7 +462,7 @@ public class TestACMEMedicalSystem {
     }
     
     @Test
-    public void test26_all_patients_with_adminrole() {
+    public void test29_all_patients_with_adminrole() {
         Response response = webTarget
             .register(adminAuth)
             .path(PATIENT_RESOURCE_NAME)
@@ -434,7 +474,7 @@ public class TestACMEMedicalSystem {
     }
 
     @Test
-    public void test27_patient_by_id_with_adminrole() {
+    public void test30_patient_by_id_with_adminrole() {
         int patientId = 1;
         Response response = webTarget
             .register(adminAuth)
@@ -449,7 +489,7 @@ public class TestACMEMedicalSystem {
     }
 
     @Test
-    public void test28_add_patient_with_adminrole() {
+    public void test31_add_patient_with_adminrole() {
         Patient newPatient = new Patient();
         newPatient.setFirstName("John");
         newPatient.setLastName("Doe");
@@ -473,7 +513,7 @@ public class TestACMEMedicalSystem {
     }
 
     @Test
-    public void test29_update_patient_with_adminrole() {
+    public void test32_update_patient_with_adminrole() {
         int patientId = 1;
         Patient updatedPatient = new Patient();
         updatedPatient.setFirstName("Jane");
@@ -505,9 +545,43 @@ public class TestACMEMedicalSystem {
 
         assertThat(patient.getId(), is(patientId));
     }
+    
+    @Test
+    public void test33_update_non_existent_patient_with_adminrole() {
+        int patientId = 23452541;
+        Patient updatedPatient = new Patient();
+        updatedPatient.setFirstName("Jane");
+        updatedPatient.setLastName("Doe");
+        updatedPatient.setYear(1996);
+        updatedPatient.setAddress("1234 Elm Street");
+        updatedPatient.setHeight(165);
+        updatedPatient.setWeight(60);
+        updatedPatient.setSmoker((byte) 0);
+
+        Response response = webTarget
+            .register(adminAuth)
+            .path(PATIENT_RESOURCE_NAME)
+            .path(String.valueOf(patientId))
+            .request()
+            .put(Entity.json(updatedPatient));
+
+        assertThat(response.getStatus(), is(404));
+
+        Patient patient = response.readEntity(Patient.class);
+
+        assertThat(patient.getFirstName(), is("Jane"));
+        assertThat(patient.getLastName(), is("Doe"));
+        assertThat(patient.getYear(), is(1996));
+        assertThat(patient.getAddress(), is("1234 Elm Street"));
+        assertThat(patient.getHeight(), is(165));
+        assertThat(patient.getWeight(), is(60));
+        assertThat(patient.getSmoker(), is((byte) 0));
+
+        assertThat(patient.getId(), is(patientId));
+    }
 
     @Test
-    public void test30_delete_patient_with_adminrole() {
+    public void test34_delete_patient_with_adminrole() {
         int patientId = 1;
         Response response = webTarget
             .register(adminAuth)
@@ -519,7 +593,7 @@ public class TestACMEMedicalSystem {
     }
     
     @Test
-    public void test31_get_physicians_with_adminrole() {
+    public void test35_get_physicians_with_adminrole() {
         Response response = webTarget
             .register(adminAuth)
             .path(PHYSICIAN_RESOURCE_NAME)
@@ -532,7 +606,7 @@ public class TestACMEMedicalSystem {
     }
 
     @Test
-    public void test32_get_physician_by_id_with_adminrole() {
+    public void test36_get_physician_by_id_with_adminrole() {
         int physicianId = 1;
         Response response = webTarget
             .register(adminAuth)
@@ -547,7 +621,7 @@ public class TestACMEMedicalSystem {
     }
 
     @Test
-    public void test33_get_physician_by_id_with_userrole_own_physician() {
+    public void test37_get_physician_by_id_with_userrole_own_physician() {
         int physicianId = 1;
         Response response = webTarget
             .register(userAuth)
@@ -562,7 +636,7 @@ public class TestACMEMedicalSystem {
     }
 
     @Test
-    public void test34_get_physician_by_id_with_userrole_other_physician() {
+    public void test38_get_physician_by_id_with_userrole_other_physician() {
         int physicianId = 2;
         Response response = webTarget
             .register(userAuth)
@@ -575,7 +649,7 @@ public class TestACMEMedicalSystem {
     }
 
     @Test
-    public void test35_delete_physician_with_adminrole() {
+    public void test39_delete_physician_with_adminrole() {
         int physicianId = 1;
         Response response = webTarget
             .register(adminAuth)
@@ -588,7 +662,20 @@ public class TestACMEMedicalSystem {
     }
     
     @Test
-    public void test36_create_physician_with_adminrole() {
+    public void test40_delete_physician_with_adminrole() {
+        int physicianId = 123452354;
+        Response response = webTarget
+            .register(adminAuth)
+            .path(PHYSICIAN_RESOURCE_NAME)
+            .path(String.valueOf(physicianId))
+            .request()
+            .delete();
+
+        assertThat(response.getStatus(), is(204));
+    }
+    
+    @Test
+    public void test41_create_physician_with_adminrole() {
         Physician newPhysician = new Physician();
         newPhysician.setFirstName("Dr. Sarah");
         newPhysician.setLastName("Lee");
@@ -607,8 +694,8 @@ public class TestACMEMedicalSystem {
     }
 
     @Test
-    public void test37_update_physician_with_adminrole() {
-        int physicianId = 1; // Replace with a valid physician ID for your test
+    public void test42_update_physician_with_adminrole() {
+        int physicianId = 1;
         Physician updatedPhysician = new Physician();
         updatedPhysician.setFirstName("Dr. Michael");
         updatedPhysician.setLastName("Taylor");
@@ -631,7 +718,31 @@ public class TestACMEMedicalSystem {
     }
     
     @Test
-    public void test38_create_prescription_with_adminrole() {
+    public void test43_update_non_existent_physician_with_adminrole() {
+        int physicianId = 4235235;
+        Physician updatedPhysician = new Physician();
+        updatedPhysician.setFirstName("Dr. Michael");
+        updatedPhysician.setLastName("Taylor");
+
+        Response response = webTarget
+            .register(adminAuth)
+            .path(PHYSICIAN_RESOURCE_NAME)
+            .path(String.valueOf(physicianId))
+            .request()
+            .put(Entity.json(updatedPhysician));
+
+        assertThat(response.getStatus(), is(404));
+
+        Physician physician = response.readEntity(Physician.class);
+
+        assertThat(physician.getFirstName(), is("Dr. Michael"));
+        assertThat(physician.getLastName(), is("Taylor"));
+
+        assertThat(physician.getId(), is(physicianId));
+    }
+    
+    @Test
+    public void test44_create_prescription_with_adminrole() {
         Prescription newPrescription = new Prescription();
         Physician physician = new Physician();
         physician.setId(1);
@@ -663,7 +774,7 @@ public class TestACMEMedicalSystem {
     }
 
     @Test
-    public void test39_update_prescription_with_adminrole() {
+    public void test45_update_prescription_with_adminrole() {
         int physicianId = 1;
         int patientId = 1;
         Prescription updatedPrescription = new Prescription();
@@ -696,9 +807,41 @@ public class TestACMEMedicalSystem {
         assertThat(prescription.getNumberOfRefills(), is(5));
         assertThat(prescription.getPrescriptionInformation(), is("Take two pills daily"));
     }
+    
+    @Test
+    public void test46_update_non_existent_prescription_with_adminrole() {
+        int physicianId = 9999;
+        int patientId = 9999;
+        Prescription updatedPrescription = new Prescription();
+        Physician physician = new Physician();
+        physician.setId(physicianId);
+        Patient patient = new Patient();
+        patient.setId(patientId);
+        Medicine medicine = new Medicine();
+        medicine.setId(1);
+
+        updatedPrescription.setPhysician(physician);
+        updatedPrescription.setPatient(patient);
+        updatedPrescription.setMedicine(medicine);
+        updatedPrescription.setNumberOfRefills(5);
+        updatedPrescription.setPrescriptionInformation("Take two pills daily");
+
+        Response response = webTarget
+            .register(adminAuth)
+            .path(PRESCRIPTION_RESOURCE_NAME)
+            .path(physicianId + "/" + patientId)
+            .request()
+            .put(Entity.json(updatedPrescription));
+
+        assertThat(response.getStatus(), is(404));
+
+        String errorMessage = response.readEntity(String.class);
+        assertThat(errorMessage, containsString("Prescription not found"));
+    }
+
 
     @Test
-    public void test40_get_prescription_by_id_with_adminrole() {
+    public void test47_get_prescription_by_id_with_adminrole() {
         int physicianId = 1;
         int patientId = 1;
         Response response = webTarget
@@ -715,7 +858,7 @@ public class TestACMEMedicalSystem {
     }
 
     @Test
-    public void test41_get_prescription_by_id_with_userrole_other_patient() {
+    public void test48_get_prescription_by_id_with_userrole_other_patient() {
         int physicianId = 1;
         int patientId = 2;
         Response response = webTarget
@@ -729,7 +872,7 @@ public class TestACMEMedicalSystem {
     }
     
     @Test
-    public void test42_get_all_prescriptions_with_adminrole() {
+    public void test49_get_all_prescriptions_with_adminrole() {
         Response response = webTarget
             .register(adminAuth)
             .path(PRESCRIPTION_RESOURCE_NAME)
@@ -747,7 +890,7 @@ public class TestACMEMedicalSystem {
 
 
     @Test
-    public void test43_delete_prescription_with_adminrole() {
+    public void test50_delete_prescription_with_adminrole() {
         int physicianId = 1;
         int patientId = 1;
         Response response = webTarget
@@ -759,6 +902,6 @@ public class TestACMEMedicalSystem {
 
         assertThat(response.getStatus(), is(204));
     }
-
+    
 
 }
