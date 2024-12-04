@@ -629,5 +629,136 @@ public class TestACMEMedicalSystem {
 
         assertThat(physician.getId(), is(physicianId));
     }
+    
+    @Test
+    public void test38_create_prescription_with_adminrole() {
+        Prescription newPrescription = new Prescription();
+        Physician physician = new Physician();
+        physician.setId(1);
+        Patient patient = new Patient();
+        patient.setId(1);
+        Medicine medicine = new Medicine();
+        medicine.setId(1);
+
+        newPrescription.setPhysician(physician);
+        newPrescription.setPatient(patient);
+        newPrescription.setMedicine(medicine);
+        newPrescription.setNumberOfRefills(3);
+        newPrescription.setPrescriptionInformation("Take one pill daily");
+
+        Response response = webTarget
+            .register(adminAuth)
+            .path(PRESCRIPTION_RESOURCE_NAME)
+            .request()
+            .post(Entity.json(newPrescription));
+
+        assertThat(response.getStatus(), is(200));
+        Prescription createdPrescription = response.readEntity(Prescription.class);
+        assertThat(createdPrescription, is(not(nullValue())));
+        assertThat(createdPrescription.getPhysician().getId(), is(physician.getId()));
+        assertThat(createdPrescription.getPatient().getId(), is(patient.getId()));
+        assertThat(createdPrescription.getMedicine().getId(), is(medicine.getId()));
+        assertThat(createdPrescription.getNumberOfRefills(), is(3));
+        assertThat(createdPrescription.getPrescriptionInformation(), is("Take one pill daily"));
+    }
+
+    @Test
+    public void test39_update_prescription_with_adminrole() {
+        int physicianId = 1;
+        int patientId = 1;
+        Prescription updatedPrescription = new Prescription();
+        Physician physician = new Physician();
+        physician.setId(physicianId);
+        Patient patient = new Patient();
+        patient.setId(patientId);
+        Medicine medicine = new Medicine();
+        medicine.setId(1);
+
+        updatedPrescription.setPhysician(physician);
+        updatedPrescription.setPatient(patient);
+        updatedPrescription.setMedicine(medicine);
+        updatedPrescription.setNumberOfRefills(5);
+        updatedPrescription.setPrescriptionInformation("Take two pills daily");
+
+        Response response = webTarget
+            .register(adminAuth)
+            .path(PRESCRIPTION_RESOURCE_NAME)
+            .path(physicianId + "/" + patientId)
+            .request()
+            .put(Entity.json(updatedPrescription));
+
+        assertThat(response.getStatus(), is(200));
+
+        Prescription prescription = response.readEntity(Prescription.class);
+        assertThat(prescription.getPhysician().getId(), is(physicianId));
+        assertThat(prescription.getPatient().getId(), is(patientId));
+        assertThat(prescription.getMedicine().getId(), is(1));
+        assertThat(prescription.getNumberOfRefills(), is(5));
+        assertThat(prescription.getPrescriptionInformation(), is("Take two pills daily"));
+    }
+
+    @Test
+    public void test40_get_prescription_by_id_with_adminrole() {
+        int physicianId = 1;
+        int patientId = 1;
+        Response response = webTarget
+            .register(adminAuth)
+            .path(PRESCRIPTION_RESOURCE_NAME)
+            .path(physicianId + "/" + patientId)
+            .request()
+            .get();
+
+        assertThat(response.getStatus(), is(200));
+        Prescription prescription = response.readEntity(Prescription.class);
+        assertThat(prescription.getPhysician().getId(), is(physicianId));
+        assertThat(prescription.getPatient().getId(), is(patientId));
+    }
+
+    @Test
+    public void test41_get_prescription_by_id_with_userrole_other_patient() {
+        int physicianId = 1;
+        int patientId = 2;
+        Response response = webTarget
+            .register(userAuth)
+            .path(PRESCRIPTION_RESOURCE_NAME)
+            .path(physicianId + "/" + patientId)
+            .request()
+            .get();
+
+        assertThat(response.getStatus(), is(403));
+    }
+    
+    @Test
+    public void test42_get_all_prescriptions_with_adminrole() {
+        Response response = webTarget
+            .register(adminAuth)
+            .path(PRESCRIPTION_RESOURCE_NAME)
+            .request()
+            .get();
+
+        assertThat(response.getStatus(), is(200));
+        List<Prescription> prescriptions = response.readEntity(new GenericType<List<Prescription>>() {});
+        assertThat(prescriptions, is(not(empty())));
+        // Optionally, verify the details of the prescriptions in the list
+        for (Prescription prescription : prescriptions) {
+            assertThat(prescription, is(not(nullValue())));
+        }
+    }
+
+
+    @Test
+    public void test43_delete_prescription_with_adminrole() {
+        int physicianId = 1;
+        int patientId = 1;
+        Response response = webTarget
+            .register(adminAuth)
+            .path(PRESCRIPTION_RESOURCE_NAME)
+            .path(physicianId + "/" + patientId)
+            .request()
+            .delete();
+
+        assertThat(response.getStatus(), is(204));
+    }
+
 
 }
